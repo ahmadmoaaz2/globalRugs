@@ -1,0 +1,73 @@
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet"/>
+<style>
+    html{
+        min-height: 100%;
+        position: relative;
+    }
+    body{
+        margin-bottom:4rem;
+    }
+    .footer-container{
+        position:absolute;
+        bottom: 0;
+        width:100%;
+        margin: 0;
+        padding: 0;
+    }
+    #myFooter {
+        background-color: #3c3d41;
+        color: white;
+        padding-top: 10px;
+    }
+    #myFooter .footer-copyright {
+        background-color: #333333;
+        padding-top: 3px;
+        padding-bottom: 3px;
+    }
+    #myFooter .facebook:hover {
+        color: red;
+    }
+    #myFooter .twitter:hover {
+        color: red;
+    }
+    #myFooter .linkedin:hover {
+        color: red;
+    }
+    #myFooter .facebook {
+        color: #3b5998;
+    }
+    #myFooter .twitter {
+        color: #1DA1F2;
+    }
+    #myFooter .linkedin {
+        color: #0077B5;
+    }
+    #myFooter{
+        flex: 0 0 auto;
+        -webkit-flex: 0 0 auto;
+    }
+    #myFooter a{
+        margin: 10px;
+        text-decoration: none;
+    }
+
+</style>
+<!-- Footer -->
+<br>
+<br>
+<br>
+<br>
+<div class="footer-container">
+    <footer id="myFooter" class="text-center">
+        <a class="logo container" href="/">
+            <img src="/BAD_Donuts_Logo2.png" alt="Logo" height="50px">
+        </a>
+        <a href="https://twitter.com/BillysDonuts?ref_src=twsrc%5Egoogle%7Ctwcamp%5Eserp%7Ctwgr%5Eauthor" class="twitter"><i class="fa fa-twitter fa-2x"></i></a>
+        <a href="https://www.facebook.com/donutmedia/" class="facebook"><i class="fa fa-facebook fa-2x"></i></a>
+        <a href="https://ca.linkedin.com/company/donut" class="linkedin"><i class="fa fa-linkedin fa-2x"></i></a>
+        <a class="btn btn-danger" href="/Contact"> Contact us </a>
+        <div class="footer-copyright">
+            <p>© {{site.CopyrightDate}} {{site.SiteName}} </p>
+        </div>
+    </footer>
+</div>

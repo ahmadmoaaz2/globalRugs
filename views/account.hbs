@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="icon" href="{{site.Logo}}">
+
+    <title>{{site.SiteName}}</title>
+</head>
+<body>
+{{>header}}
+<br>
+<div class="container-fluid float-left w-50" id="normal1" style="margin-bottom: 25px;">
+    <div class="card">
+        <h5 class="card-header bg-dark" style="color: white;">Change Email</h5>
+        <div class="card-body bg-light">
+            <form method="post" id="changeEmailForm" action="/changeEmail/{{account._id}}" class="form">
+                <label for="existingPassword">Email:</label>
+                <input id="email" placeholder="Email" type="email" name="email" class="form-control" value="{{account.email}}">
+                <br>
+                <button type="button" id="changeEmailButton" class="btn btn-outline-success">Confirm</button>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="container-fluid float-right w-50" id="passwordContainer">
+    <div class="card">
+        <h5 class="card-header bg-dark" style="color: white;">Change Password</h5>
+        <div class="card-body bg-light">
+            <form method="post" id="changePassword" action="/changePassword/{{account._id}}" class="form" style="margin-bottom: 4px;">
+                <label for="existingPassword">Existing Password:</label>
+                <input id="existingPassword" placeholder="Existing Password" type="password" class="form-control">
+                <br>
+                <label for="password">New Password:</label>
+                <input id="password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" placeholder="New Password" name="password" type="password" class="form-control">
+                <br>
+                <label for="cPassword">New Password:</label>
+                <input id="cPassword" placeholder="Confirm New Password" name="cPassword" type="password" class="form-control">
+                <br>
+                <div class="d-flex">
+                    <input type="checkbox" id="changePasswordCheckbox" class="checkbox" style="height: 15px; width: 15px; margin-right: 5px; margin-top: 5px;">
+                    <label for="changePasswordCheckbox">Show Passwords</label>
+                </div>
+                <br>
+                <button type="button" id="changePasswordButton" class="btn btn-outline-success">Confirm</button>
+            </form>
+        </div>
+    </div>
+</div>
+<div id="passwordDetails" class="container-fluid float-left d-none w-50">
+    <div class="card">
+        <h5 class="card-header bg-dark" style="color: white;">Requirements</h5>
+        <div class="card-body bg-light" style="margin-bottom: 48.4px;">
+            <p class="lead big">For safety reasons, your new password must include the following:</p>
+            <br>
+            <p id="length" class="text-danger">Minimum of 8 Characters</p>
+            <p id="letter" class="text-danger">1 Lowercase Letter</p>
+            <p id="capital" class="text-danger">1 Uppercase Letter</p>
+            <p id="number" class="text-danger">1 Number</p>
+            <p id="match" class="text-success">Passwords must match</p>
+            <br>
+            <button class="btn-outline-danger btn" type="button">Cancel</button>
+            <br>
+        </div>
+    </div>
+</div>
+<div class="container-fluid float-left w-50" id="normal2">
+    <div class="card">
+        <h5 class="card-header bg-dark" style="color: white;">Change Username</h5>
+        <div class="card-body bg-light">
+            <form method="post" id="changeUsernameForm" action="/changeUsername/{{account._id}}" class="form">
+                <label for="name">Username:</label>
+                <input id="name" placeholder="Username" type="text" class="form-control" name="name" value="{{account.name}}">
+                <br>
+                <button type="button" id="changeUsernameButton" class="btn btn-outline-success">Confirm</button>
+            </form>
+        </div>
+    </div>
+</div>
+<br>
+<div class="container-fluid text-center">
+    <form method="post" id="deleteForm{{account._id}}" action="/deleteUserA/{{account._id}}" class="form">
+        <button type="button" id="deleteButton{{account._id}}" class="btn btn-danger" style="margin: 50px;">Delete Account</button>
+    </form>
+</div>
+<br>
+{{>footer}}
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script src="/app.js"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script>
+    $(document).ready(function () {
+        let passGood = "no";
+        $("#deleteButton{{account._id}}").on("click", function () {
+            swal({
+                title: "Are you sure?",
+                text: "Once deleted, you will not be able to recover this account!",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            }).then((willDelete) => {
+                if (willDelete) {
+                    $("#deleteForm{{account._id}}").submit();
+                } else {
+                    swal("Your account is safe!");
+                }
+            });
+        });
+        $("#changeEmailButton").on("click", function () {
+            if($("#email").val() === ""){
+                swal({
+                    title: "Please Enter a Valid Email",
+                    icon: "error"
+                })
+            }
+            else {
+                swal({
+                    text: 'Enter your password to confirm.',
+                    content: "input",
+                    icons: "warning",
+                    button: {
+                        text: "Confirm",
+                        closeModal: false,
+                    },
+                }).then((password) => {
+                    if (password === "{{account.password}}") {
+                        $("#changeEmailForm").submit();
+                    } else {
+                        swal("Incorrect Password!")
+                    }
+                });
+            }
+        });
+        $("#changeUsernameButton").on("click", function () {
+            if ($("#name").val() === "") {
+                swal({
+                    title: "Please Enter a Valid Username",
+                    icon: "error"
+                })
+            } else {
+                swal({
+                    text: 'Enter your password to confirm.',
+                    content: "input",
+                    icons: "warning",
+                    button: {
+                        text: "Confirm",
+                        closeModal: false,
+                    },
+                }).then((password) => {
+                    if (password === "{{account.password}}") {
+                        $("#changeUsernameForm").submit();
+                    } else {
+                        swal("Incorrect Password!")
+                    }
+                });
+            }
+        });
+        $("#changePasswordButton").on("click", function () {
+            if($("#existingPassword").val() !== "{{account.password}}"){
+                swal({
+                    title: "Existing Password is Incorrect",
+                    icon: "error"
+                })
+            } else if(passGood === "no"){
+                swal({
+                    title: "New password is invalid",
+                    icon: "error"
+                })
+            } else if($("#password").val() !== $("#cPassword").val()){
+                swal({
+                    title: "New Passwords Do not Match",
+                    icon: "error"
+                })
+            } else {
+                swal({
+                    title: "Are you sure?",
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true,
+                }).then((willDelete) => {
+                    if (willDelete) {
+                        $("#changePassword").submit();
+                    } else {
+                        swal("No changes were made!").then((result)=> {
+                            location.href = location.href
+                        });
+                    }
+                });
+            }
+        });
+        $("#changePasswordCheckbox").on("click", function () {
+            let x = document.getElementById("existingPassword");
+            let y = document.getElementById("password");
+            let z = document.getElementById("cPassword");
+            if(x.type === "password"){
+                x.type = "text";
+                y.type = "text";
+                z.type = "text";
+            } else {
+                x.type = "password";
+                y.type = "password";
+                z.type = "password";
+            }
+        });
+        $("#password").on("input", function () {
+            $("#normal1").addClass("d-none");
+            $("#normal2").addClass("d-none");
+            $("#passwordDetails").removeClass("d-none");
+        });
+        $("#password").on("click", function () {
+            $("#normal1").addClass("d-none");
+            $("#normal2").addClass("d-none");
+            $("#passwordDetails").removeClass("d-none");
+        });
+        $(document).mouseup(function(e) {
+            var container = $("#passwordContainer");
+            if (!container.is(e.target) && container.has(e.target).length === 0) {
+                $("#normal1").removeClass("d-none");
+                $("#normal2").removeClass("d-none");
+                $("#passwordDetails").addClass("d-none");
+            }
+        });
+        $("#cPassword").on("input", function () {
+            $("#normal1").addClass("d-none");
+            $("#normal2").addClass("d-none");
+            $("#passwordDetails").removeClass("d-none");
+        });
+        $("#cPassword").on("click", function () {
+            $("#normal1").addClass("d-none");
+            $("#normal2").addClass("d-none");
+            $("#passwordDetails").removeClass("d-none");
+        });
+        let letter = document.getElementById("letter");
+        let capital = document.getElementById("capital");
+        let number = document.getElementById("number");
+        let length = document.getElementById("length");
+        let match = document.getElementById("match");
+        let myInput = document.getElementById("password");
+        $("#password").on("blur", function () {
+            if (letter.classList.contains("text-success") && capital.classList.contains("text-success")&& number.classList.contains("text-success")&& length.classList.contains("text-success")) {
+                passGood = "yes";
+            }
+        });
+        $("#cPassword").on("blur", function () {
+
+        });
+        $("#password").on("click", function () {
+            if (letter.classList.contains("text-success") && capital.classList.contains("text-success")&& number.classList.contains("text-success")&& length.classList.contains("text-success")) {
+                passGood = "yes";
+            }
+        });
+        $("#cPassword").on("click", function () {
+            if (letter.classList.contains("text-success") && capital.classList.contains("text-success")&& number.classList.contains("text-success")&& length.classList.contains("text-success")) {
+                passGood = "yes";
+            }
+        });
+        $("#password").on("keydown", function () {
+            if (letter.classList.contains("text-success") && capital.classList.contains("text-success")&& number.classList.contains("text-success")&& length.classList.contains("text-success")) {
+                passGood = "yes";
+            }
+        });
+        $("#cPassword").on("keydown", function () {
+            if (letter.classList.contains("text-success") && capital.classList.contains("text-success")&& number.classList.contains("text-success")&& length.classList.contains("text-success")) {
+                passGood = "yes";
+            }
+        });
+        $("#password").on("keyup", function () {
+            if (letter.classList.contains("text-success") && capital.classList.contains("text-success")&& number.classList.contains("text-success")&& length.classList.contains("text-success")) {
+                passGood = "yes";
+            }
+        });
+        $("#cPassword").on("keyup", function () {
+            if (letter.classList.contains("text-success") && capital.classList.contains("text-success")&& number.classList.contains("text-success")&& length.classList.contains("text-success")) {
+                passGood = "yes";
+            }
+        });
+        $("#password").on("change", function () {
+            if (letter.classList.contains("text-success") && capital.classList.contains("text-success")&& number.classList.contains("text-success")&& length.classList.contains("text-success")) {
+                passGood = "yes";
+            }
+        });
+        $("#cPassword").on("change", function () {
+            if (letter.classList.contains("text-success") && capital.classList.contains("text-success")&& number.classList.contains("text-success")&& length.classList.contains("text-success")) {
+                passGood = "yes";
+            }
+        });
+        // When the user starts to type something inside the password field
+        $("#password").on("keyup",function() {
+            if (letter.classList.contains("text-success") && capital.classList.contains("text-success")&& number.classList.contains("text-success")&& length.classList.contains("text-success")) {
+                passGood = "yes";
+            }
+            if($("#password").val() === $("#cPassword").val()){
+                match.classList.add("text-success");
+                match.classList.remove("text-danger");
+            } else {
+                match.classList.remove("text-success");
+                match.classList.add("text-danger");
+            }
+            let lowerCaseLetters = /[a-z]/g;
+            if(myInput.value.match(lowerCaseLetters)) {
+                letter.classList.remove("text-danger");
+                letter.classList.add("text-success");
+            } else {
+                letter.classList.remove("text-success");
+                letter.classList.add("text-danger");
+            }
+            // text-successate capital letters
+            let upperCaseLetters = /[A-Z]/g;
+            if(myInput.value.match(upperCaseLetters)) {
+                capital.classList.remove("text-danger");
+                capital.classList.add("text-success");
+            } else {
+                capital.classList.remove("text-success");
+                capital.classList.add("text-danger");
+            }
+
+            // text-successate numbers
+            let numbers = /[0-9]/g;
+            if(myInput.value.match(numbers)) {
+                number.classList.remove("text-danger");
+                number.classList.add("text-success");
+            } else {
+                number.classList.remove("text-success");
+                number.classList.add("text-danger");
+            }
+            // text-successate length
+            if(myInput.value.length >= 8) {
+                length.classList.remove("text-danger");
+                length.classList.add("text-success");
+            } else {
+                length.classList.remove("text-success");
+                length.classList.add("text-danger");
+            }
+        });
+        $("#cPassword").on("keyup", function() {
+            if ($("#password").val() === $("#cPassword").val()) {
+                match.classList.add("text-success");
+                match.classList.remove("text-danger");
+            } else {
+                match.classList.remove("text-success");
+                match.classList.add("text-danger");
+            }
+        });
+    });
+</script>
+</body>
+</html>

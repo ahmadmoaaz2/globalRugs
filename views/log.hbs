@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="icon" href="{{site.Logo}}">
+
+    <title>{{site.SiteName}}</title>
+
+</head>
+<body class="d-flex flex-column">
+{{>header}}
+<br></br>
+<div class="text-center container-fluid">
+    <a class="btn-outline-info btn active" id="button1" href="/logs">Server Visits</a>
+    <a class="btn-outline-info btn" id="button2" href="/logsError">Server Errors</a>
+    <a class="btn-outline-info btn" id="button3" href="/logsLogin">User Authentication</a>
+    <a class="btn-outline-info btn" id="button4" href="/logsDB">Database Usage</a>
+</div>
+<br></br>
+<form class="form d-flex container text-center" method="get" action="/logs" style="padding-bottom: 30px;">
+    <label class="lead large" for="filter" style="padding-right: 20px;">Filter:</label>
+    <input class="form-control" name="filter" id="filter" placeholder="Keyword"></input>
+    <button type="submit" class="btn btn-primary" id="filterButton" style="margin-left: 20px;">Reset</button>
+</form>
+{{#if serverVisits}}
+    {{#each serverVisits}}
+        <div class="jumbotron container d-block text-center" style="padding:5px;">
+            <p class="text-info">{{this.method}} at {{this.url}} by {{this.user}} with IP: {{this.ip}} ({{this.status}})</p>
+            <p class="text-default small">{{this.time}}</p>
+        </div>
+    {{/each}}
+{{else}}
+    <div class="jumbotron container d-block text-center" style="padding:5px;">
+        <p class="text-info">Nothing To Show</p>
+    </div>
+{{/if}}
+{{>footer}}
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script src="app.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#filter").on("keydown", function () {
+            if($("#filter").val() === "")
+                $("#filterButton").html("Reset");
+            else
+                $("#filterButton").html("Search");
+        });
+        $("#filter").on("blur", function () {
+            if($("#filter").val() === "")
+                $("#filterButton").html("Reset");
+            else
+                $("#filterButton").html("Search");
+        });
+    });
+</script>
+</body>
+</html>

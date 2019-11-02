@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="icon" href="{{site.Logo}}">
+
+    <title>{{site.SiteName}}</title>
+</head>
+<body>
+{{>header}}
+<br>
+<form class="form d-flex container text-center" method="get" action="/users" style="padding-bottom: 30px;">
+    <label class="lead large" for="filter" style="padding-right: 20px;">Filter:</label>
+    <input class="form-control" name="filter" id="filter" placeholder="Keyword">
+    <button type="submit" class="btn btn-primary" id="filterButton" style="margin-left: 20px;">Reset</button>
+</form>
+<div class=" container-fluid row justify-content-center">
+    {{#each accounts}}
+        <div class="card ml-3 mr-3 mb-3 mt-3 text-center" style="width:15rem">
+            <div class="card-body">
+                <div id="cardHolder{{this._id}}">
+                    <h5 class="card-title">{{this.name}}</h5>
+                    <p class="card-text">{{this.email}}</p>
+                    <p class="card-text">{{this.admin}}</p>
+                    <button id="editButton{{this._id}}" class="btn btn-outline-success" style="margin-bottom: 10px;">Edit User</button>
+                    <form method="post" id="deleteForm{{this._id}}" action="/deleteUser/{{this._id}}">
+                        <button type="button" id="deleteButton{{this._id}}" class="btn btn-outline-danger">Delete User</button>
+                    </form>
+                </div>
+                <form method="post" id="editForm{{this._id}}" action="/editUser/{{this._id}}" class="d-none">
+                    <label>Username:</label>
+                    <input class="form-control" value="{{this.name}}" name="username" placeholder="Username" required>
+                    <label>Password:</label>
+                    <input class="form-control" type="password" value="{{this.password}}" name="password" placeholder="Password" required>
+                    <label>Email:</label>
+                    <input class="form-control" type="email" value="{{this.email}}" name="email" placeholder="Email" required>
+                    <label>Admin Status:</label>
+                    <select name="admin" class="form-control" required>
+                        {{#if (eq this.admin "Admin")}}
+                            <option value="true" selected>True</option>
+                        {{else}}
+                            <option value="true">True</option>
+                        {{/if}}
+                        {{#if (eq this.admin "User")}}
+                            <option value="false" selected>False</option>
+                        {{else}}
+                            <option value="false">False</option>
+                        {{/if}}
+                    </select>
+                    <button type="button" id="editButtonForm{{this._id}}" class="btn btn-outline-success" style="margin: 10px;">Confirm</button>
+                    <br>
+                    <button type="button" class="btn btn-outline-danger" id="cancelButton{{this._id}}">Cancel</button>
+                </form>
+            </div>
+        </div>
+    {{/each}}
+</div>
+{{>footer}}
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script src="/app.js"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script>
+        {{#each accounts}}
+        $(document).ready(function () {
+            $("#editButton{{this._id}}").on("click", function () {
+                $("#cardHolder{{this._id}}").addClass("d-none");
+                $("#editForm{{this._id}}").removeClass("d-none");
+            });
+            $("#cancelButton{{this._id}}").on("click", function () {
+                $("#cardHolder{{this._id}}").removeClass("d-none");
+                $("#editForm{{this._id}}").addClass("d-none");
+            });
+            $("#deleteButton{{this._id}}").on("click", function () {
+                swal({
+                    title: "Are you sure?",
+                    text: "Once deleted, you will not be able to recover this user!",
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true,
+                }).then((willDelete) => {
+                    if (willDelete) {
+                        $("#deleteForm{{this._id}}").submit();
+                    } else {
+                        swal("No changes were made");
+                    }
+                });
+            });
+            $("#editButtonForm{{this._id}}").on("click", function () {
+                swal({
+                    title: "Are you sure?",
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true,
+                }).then((willDelete) => {
+                    if (willDelete) {
+                        $("#editForm{{this._id}}").submit();
+                    } else {
+                        swal("No changes were made");
+                    }
+                });
+            });
+        });
+        {{/each}}
+    $(document).ready(function () {
+        $("#filter").on("keydown", function () {
+            if($("#filter").val() === "")
+                $("#filterButton").html("Reset");
+            else
+                $("#filterButton").html("Search");
+        });
+        $("#filter").on("blur", function () {
+            if($("#filter").val() === "")
+                $("#filterButton").html("Reset");
+            else
+                $("#filterButton").html("Search");
+        });
+    });
+</script>
+</body>
+</html>

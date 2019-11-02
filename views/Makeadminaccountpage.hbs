@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="icon" href="{{site.Logo}}">
+    <style>
+        .forminput {
+          /* Tell the input to use all the available space */
+            width: 96%;
+          /* And hide the input's outline, so the form looks like the outline */
+          border:none;
+        }
+        .forminput:focus{
+          outline: none;
+        }
+    </style>
+    <title>{{site.SiteName}}</title>
+</head>
+    <body class="d-flex flex-column">
+        {{>header}}
+        <br>
+            <div class="container">
+                <h1>Make Your Account</h1>
+                <form method="post" action="/registerAdmin">
+                    <div class="form-row">
+                        <div class="form-group col-12">
+                            <label for="name">Username</label>
+                            <input type="text" id="name" class="form-control" name="name" placeholder="Name" required>
+                        </div>
+                        <div class="form-group col-12">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" class="form-control" name="email" placeholder="example@example.com" required>
+                        </div>
+                        <div class="form-group col-12">
+                            <label for="psw">Password</label>
+                            <div class="form-control">
+                                <input type="password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" id="psw" class="forminput" minlength="8" maxlength="24" name="password" placeholder="Password" required>
+                                <a onclick="showPass()"><img id="eyeImage" class="float-right" height="25px" src="../eyeInvis.png"></a>
+                            </div>
+                            <p class="text-info" style="padding: 10px;">Password Must Include:</p>
+                            <div class="container">
+                                <p id="length" class="small text-danger">Minimum of 8 Characters</p>
+                                <p id="letter" class="small text-danger">1 Lowercase Letter</p>
+                                <p id="capital" class="small text-danger">1 Uppercase Letter</p>
+                                <p id="number" class="small text-danger">1 Number</p>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-success">Make Account</button>
+                    <a href="/Loginpage" class="btn btn-outline-primary">Login</a>
+                </form>
+            </div>
+        <br>
+        {{>footer}}
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+        <script src="/app.js"></script>
+        <script>
+            function showPass() {
+                let x = document.getElementById("psw");
+                let y = document.getElementById("eyeImage");
+                if (x.type === "password") {
+                    x.type = "text";
+                    y.src = "../eye.png";
+                } else {
+                    x.type = "password";
+                    y.src = "../eyeInvis.png";
+                }
+            }
+            let myInput = document.getElementById("psw");
+            let letter = document.getElementById("letter");
+            let capital = document.getElementById("capital");
+            let number = document.getElementById("number");
+            let length = document.getElementById("length");
+            // When the user starts to type something inside the password field
+            myInput.onkeyup = function() {
+              // text-successate lowercase letters
+              let lowerCaseLetters = /[a-z]/g;
+              if(myInput.value.match(lowerCaseLetters)) {
+                letter.classList.remove("text-danger");
+                letter.classList.add("text-success");
+              } else {
+                letter.classList.remove("text-success");
+                letter.classList.add("text-danger");
+            }
+
+              // text-successate capital letters
+              let upperCaseLetters = /[A-Z]/g;
+              if(myInput.value.match(upperCaseLetters)) {
+                capital.classList.remove("text-danger");
+                capital.classList.add("text-success");
+              } else {
+                capital.classList.remove("text-success");
+                capital.classList.add("text-danger");
+              }
+
+              // text-successate numbers
+              let numbers = /[0-9]/g;
+              if(myInput.value.match(numbers)) {
+                number.classList.remove("text-danger");
+                number.classList.add("text-success");
+              } else {
+                number.classList.remove("text-success");
+                number.classList.add("text-danger");
+              }
+
+              // text-successate length
+              if(myInput.value.length >= 8) {
+                length.classList.remove("text-danger");
+                length.classList.add("text-success");
+              } else {
+                length.classList.remove("text-success");
+                length.classList.add("text-danger");
+              }
+            }
+        </script>
+    </body>
+</html>

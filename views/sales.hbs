@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="icon" href="{{site.Logo}}">
+
+    <title>{{site.SiteName}}</title>
+</head>
+<body>
+{{>header}}
+<br>
+{{#if admin}}
+    <div class="container-fluid text-center">
+
+        <h1 style="padding: 10px">Sales</h1>
+        <form class="form d-flex container text-center" method="get" action="/sales" style="padding-bottom: 30px;">
+            <label class="lead large" for="filter" style="padding-right: 20px;">Filter:</label>
+            <input class="form-control" name="filter" id="filter" placeholder="Keyword">
+            <button type="submit" class="btn btn-primary" id="filterButton" style="margin-left: 20px;">Reset</button>
+        </form>
+        <table class="table table-striped table-hover">
+            <tr>
+                <th scope="col">Item</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Unit Price</th>
+                <th scope="col">Customer</th>
+                <th scope="col">Sale Date</th>
+                <th scope="col">Last Updated Date</th>
+                <th scope="col">Total</th>
+                <th scope="col">Actions</th>
+            </tr>
+            {{#if sales}}
+                {{#each sales}}
+                    <tr>
+                        <td>{{this.item}}</td>
+                        <td>{{this.quantity}}</td>
+                        <td>{{this.unit_price}}</td>
+                        <td>{{this.user}}</td>
+                        <td>{{this.created_date_time}}</td>
+                        <td>{{this.update_date_time}}</td>
+                        <td>{{multiply this.quantity this.unit_price}}</td>
+                        <td><form id="deleteForm{{this._id}}" method="post" action="/sales/{{this._id}}?_method=DELETE"><a class="btn btn-primary" href="/sales-edit-form/{{this._id}}">Edit</a> <button type="button" id="deleteButton{{this._id}}" class="btn btn-danger">Delete</button></form></td>
+                    </tr>
+                {{/each}}
+            {{else}}
+                <tr>
+                    <td colspan="5">No items found.</td>
+                </tr>
+            {{/if}}
+        </table>
+        <div class="container text-right">
+            <a class="btn btn-success" href="/sales-add-form">Add sale</a>
+        </div>
+    </div>
+{{else}}
+    <div class="container-fluid text-center">
+        <h1 style="padding: 10px">Order History</h1>
+        <form class="form d-flex container text-center" method="get" action="/sales" style="padding: 30px;">
+            <label class="lead large" for="filter" style="padding-right: 20px;">Filter:</label>
+            <input class="form-control" name="filter" id="filter" placeholder="Keyword">
+            <button type="submit" class="btn btn-primary" id="filterButton" style="margin-left: 20px;">Reset</button>
+        </form>
+    </div>
+    <br>
+    <div class="container-fluid justify-content-center text-center" style="padding-left: 30px; padding-right: 30px">
+        <table class="table table-striped table-hover">
+            <tr>
+                <th scope="col">Products</th>
+                <th scope="col" width="30%"></th>
+                <th scope="col">Date of Purchase</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Unit Price</th>
+                <th scope="col">Item Total</th>
+            </tr>
+            {{#if sales}}
+                {{#each sales}}
+                    <tr>
+                        <td>{{this.item}}</td>
+                        <td></td>
+                        <td>{{this.created_date_time}}</td>
+                        <td>{{this.quantity}}</td>
+                        <td>{{this.unit_price}}</td>
+                        <td>{{multiply this.quantity this.unit_price}}</td>
+                    </tr>
+                {{/each}}
+            {{else}}
+                <tr>
+                    <td colspan="5">No items found.</td>
+                </tr>
+            {{/if}}
+        </table>
+    </div>
+{{/if}}
+{{>footer}}
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script>
+        {{#each sales}}
+        $(document).ready(function () {
+            $("#deleteButton{{this._id}}").on("click", function () {
+                swal({
+                    title: "Are you sure?",
+                    text: "Once deleted, you will not be able to recover this sale!",
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true,
+                }).then((willDelete) => {
+                    if (willDelete) {
+                        $("#deleteForm{{this._id}}").submit();
+                    } else {
+                        swal("No changes were made");
+                    }
+                });
+            });
+        });
+        {{/each}}
+    $(document).ready(function () {
+        $("#filter").on("keydown", function () {
+            if($("#filter").val() === "")
+                $("#filterButton").html("Reset");
+            else
+                $("#filterButton").html("Search");
+        });
+        $("#filter").on("blur", function () {
+            if($("#filter").val() === "")
+                $("#filterButton").html("Reset");
+            else
+                $("#filterButton").html("Search");
+        });
+    });
+</script>
+</body>
+</html>

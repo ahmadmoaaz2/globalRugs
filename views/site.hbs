@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="icon" href="{{site.Logo}}">
+
+    <title>{{site.SiteName}}</title>
+
+</head>
+<body class="d-flex flex-column" style="width: 100%;">
+<style>
+    html {
+        scroll-behavior: smooth;
+    }
+
+    a {
+        text-decoration: none;
+        color: black;
+    }
+
+    #down {
+
+
+    }
+    #contact{
+
+    }
+    #home_page{
+
+    }
+</style>
+{{>header}}
+<div class="container">
+
+    <!-- Jumbotron Header -->
+    <header class="jumbotron my-4">
+        <h3 class="display-4">Hello, {{user}}!</h3>
+        <p class="lead"> You can now modify the BAD donuts website using the functionality below. Once you make the changes,
+            please remember to confirm.</p>
+        <div class="text-center">
+            <a href="#down" class="btn btn-info btn-lg">Change general</a>
+            <a href="#contact" class="btn btn-info btn-lg">Change contact</a>
+            <a href="#home_page" class="btn btn-info btn-lg">Change homepage</a>
+        </div>
+    </header>
+</div>
+
+
+<br>
+<form id="editForm1" action="/editSite" method="post" class="form mx-auto container-fluid">
+    <div id=down class="row container-fluid">
+        <!--General-->
+        <div class="w-50">
+            <div class="card h-100">
+                <div class="h2 card-header bg-dark text-center" style="color: white;">
+                    General
+                </div>
+                <div class="card-body">
+                    <label>Site Name:</label>
+                    <input class="form-control" placeholder="Site name" name="SiteName" value="{{site.SiteName}}">
+                    <br>
+                    <label>Logo:</label>
+                    <img height="50" src="{{site.Logo}}">
+                    <input class="form-control" placeholder="Logo URL" name="Logo" value="{{site.Logo}}">
+                    <br>
+                    <label>Navbar Color (Hex):</label> <p style="background: {{site.NavColor}}" class="form-control"></p>
+                    <input class="form-control" placeholder="Navbar Color" id="NavColor" name="NavColor" value="{{site.NavColor}}">
+                    <br>
+                    <label>Copyright Date:</label>
+                    <input class="form-control" placeholder="Date" name="CopyrightDate" value="{{site.CopyrightDate}}">
+                    <br>
+                    <div id="contact">
+                        <div class="container-fluid h3 card-header bg-dark text-center" style="color: white;">
+                            Contact
+                        </div>
+                        <br>
+                        <label>Phone Number:</label>
+                        <input class="form-control" placeholder="Phone Number" name="PhoneNumber" value="{{site.PhoneNumber}}">
+                        <br>
+                        <label>Email:</label>
+                        <input class="form-control" placeholder="Email" name="Email" value="{{site.Email}}">
+                        <br>
+                        <label>Address:</label>
+                        <input class="form-control" placeholder="Address" name="Address" value="{{site.Address}}">
+                        <br>
+                        <label>Map Link:</label>
+                        <input class="form-control" placeholder="Map Link" name="MapLink" value="{{site.MapLink}}">
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button class="btn-outline-primary btn" type="button" id="editButton1">Confirm</button>
+                </div>
+            </div>
+        </div>
+        <!--HOME PAGE-->
+        <div id="home_page" class="w-50">
+            <div class="card h-100">
+                <div class="h2 card-header bg-dark text-center" style="color: white;">
+                    Home Page
+                </div>
+                <div class="card-body">
+                    <label>Homepage Image:</label>
+                    <img height="50" src="{{site.HomeImage}}">
+                    <input class="form-control" placeholder="Homepage Image" name="HomeImage" value="{{site.HomeImage}}">
+                    <br>
+                    <label>Homepage Main Title:</label>
+                    <input class="form-control" placeholder="Homepage Main Title" name="HomeDescTitle" value="{{site.HomeDescTitle}}">
+                    <br>
+                    <label>Homepage Main Description:</label>
+                    <input class="form-control" placeholder="Homepage Main Description" name="HomeDesc" value="{{site.HomeDesc}}">
+                    <br>
+                    <label>Homepage Secondary Title:</label>
+                    <input class="form-control" placeholder="Homepage Secondary Title" name="HomeDescTitle2" value="{{site.HomeDescTitle2}}">
+                    <br>
+                    <label>Homepage Secondary Description:</label>
+                    <input class="form-control" placeholder="Homepage Secondary Description" name="HomeDesc2" value="{{site.HomeDesc2}}">
+                    <br>
+                    <label>Home Card 1 Image:</label>
+                    <img height="50" src="{{site.CardImage1}}">
+                    <input class="form-control" placeholder="First Card Image" name="CardImage1" value="{{site.CardImage1}}">
+                    <br>
+                    <label>Home Card 1 Title:</label>
+                    <input class="form-control" placeholder="First Card Title" name="CardTitle1" value="{{site.CardTitle1}}">
+                    <br>
+                    <label>Home Card 1 Description:</label>
+                    <input class="form-control" placeholder="First Card Description" name="CardDesc1" value="{{site.CardDesc1}}">
+                    <br>
+                    <label>Home Card 2 Image:</label>
+                    <img height="50" src="{{site.CardImage2}}">
+                    <input class="form-control" placeholder="Second Card Image" name="CardImage2" value="{{site.CardImage2}}">
+                    <br>
+                    <label>Home Card 2 Title:</label>
+                    <input class="form-control" placeholder="Second Card Title" name="CardTitle2" value="{{site.CardTitle2}}">
+                    <br>
+                    <label>Home Card 2 Description:</label>
+                    <input class="form-control" placeholder="Second Card Description" name="CardDesc2" value="{{site.CardDesc2}}">
+                    <br>
+                    <label>Home Card 3 Image:</label>
+                    <img height="50" src="{{site.CardImage3}}">
+                    <input class="form-control" placeholder="Third Card Image" name="CardImage3" value="{{site.CardImage3}}">
+                    <br>
+                    <label>Home Card 3 Title:</label>
+                    <input class="form-control" placeholder="Third Card Title" name="CardTitle3" value="{{site.CardTitle3}}">
+                    <br>
+                    <label>Home Card 3 Description:</label>
+                    <input class="form-control" placeholder="Third Card Description" name="CardDesc3" value="{{site.CardDesc3}}">
+                </div>
+                <div class="card-footer">
+                    <button class="btn-outline-primary btn" type="button" id="editButton2">Confirm</button>
+                </div>
+            </div>
+        </div>
+        <div class="w-50">
+            <div class="card">
+                <div class="h2 card-header bg-dark text-center" style="color: white;">
+                    Home Page Preview
+                </div>
+                <div class="card-body" style="height: 500px;">
+                    <iframe style="width: 100%; height: 100%;" src="/" allowfullscreen></iframe>
+                </div>
+            </div>
+        </div>
+
+        <div class="w-50">
+            <div class="card">
+                <div class="h2 card-header bg-dark text-center" style="color: white;">
+                    Contact Page Preview
+                </div>
+                <div class="card-body" style="height: 500px;">
+                    <iframe style="width: 100%; height: 100%;" src="/cheat" allowfullscreen></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+{{>footer}}
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script src="app.js"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#editButton1").on("click", function () {
+            swal({
+                title: "Are you sure?",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            }).then((willDelete) => {
+                if (willDelete) {
+                    $("#editForm1").submit();
+                } else {
+                    swal("No changes were made");
+                }
+            });
+        });
+    });
+    $(document).ready(function () {
+        $("#editButton2").on("click", function () {
+            swal({
+                title: "Are you sure?",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            }).then((willDelete) => {
+                if (willDelete) {
+                    $("#editForm1").submit();
+                } else {
+                    swal("No changes were made");
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>

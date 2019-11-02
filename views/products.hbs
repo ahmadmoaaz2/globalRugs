@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <style>
+        .hovereffect {
+            width:100%;
+            height:100%;
+            float:left;
+            overflow:hidden;
+            position:relative;
+            text-align:center;
+            cursor:default
+        }
+
+        .hovereffect .overlay {
+            width:100%;
+            height:100%;
+            position:absolute;
+            overflow:hidden;
+            top:0;
+            left:0;
+            opacity:0;
+            background-color:rgba(0,0,0,0.5);
+            -webkit-transition:all .4s ease-in-out;
+            transition:all .4s ease-in-out;
+        }
+
+        .hovereffect img {
+            display:block;
+            position:relative;
+            -webkit-transition:all .4s linear;
+            transition:all .4s linear;
+        }
+
+        .hovereffect h2 {
+            text-transform:uppercase;
+            color:#fff;
+            text-align:center;
+            position:relative;
+            font-size:17px;
+            background:rgba(0,0,0,0.6);
+            -webkit-transform:translatey(-100px);
+            -ms-transform:translatey(-100px);
+            transform:translatey(-100px);
+            -webkit-transition:all .2s ease-in-out;
+            transition:all .2s ease-in-out;
+            padding:10px;
+        }
+
+        .hovereffect a.info {
+            text-decoration:none;
+            display:inline-block;
+            text-transform:uppercase;
+            color:#fff;
+            border:1px solid #fff;
+            background-color:transparent;
+            opacity:0;
+            filter:alpha(opacity=0);
+            -webkit-transition:all .2s ease-in-out;
+            transition:all .2s ease-in-out;
+            margin:50px 0 0;
+            padding:7px 14px;
+        }
+
+        .hovereffect a.info:hover {
+            box-shadow:0 0 5px #fff;
+        }
+
+        .hovereffect:hover img {
+            -ms-transform:scale(1.2);
+            -webkit-transform:scale(1.2);
+            transform:scale(1.2);
+        }
+
+        .hovereffect:hover .overlay {
+            opacity:1;
+            filter:alpha(opacity=100);
+        }
+
+        .hovereffect:hover h2,.hovereffect:hover a.info {
+            opacity:1;
+            filter:alpha(opacity=100);
+            -ms-transform:translatey(0);
+            -webkit-transform:translatey(0);
+            transform:translatey(0);
+        }
+
+        .hovereffect:hover a.info {
+            -webkit-transition-delay:.2s;
+            transition-delay:.2s;
+        }
+        .button {
+            display: inline-block;
+            background-color: #1E90FF;
+            border: none;
+            color: #FFFFFF;
+            text-align: center;
+            font-size: 17px;
+            padding: 10px;
+            width: 155px;
+            transition: all 0.3s;
+            cursor: pointer;
+            margin: 4px;
+            border-radius: 9px;
+        }
+
+        .button span {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            transition: 0.3s;
+        }
+
+        .button span:after {
+            content: '\00bb';
+            position: absolute;
+            opacity: 0;
+            top: 0;
+            right: -20px;
+            transition: 0.3s;
+        }
+
+        .button:hover span {
+            padding-right: 25px;
+        }
+
+        .button:hover span:after {
+            opacity: 1;
+            right: 0;
+        }
+    </style>
+    <link rel="icon" href="{{site.Logo}}">
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <title>{{site.SiteName}}</title>
+</head>
+<body class="d-flex flex-column">
+{{>header}}
+<br>
+<div class="container-fluid text-center">
+    <h1 style="padding: 10px">Products</h1>
+    {{#if admin}}<a class="btn btn-info" href="/products-add-form">Add product</a>{{else}}{{/if}}
+</div>
+<br>
+<form class="form d-flex container text-center" method="get" action="/products" style="padding-bottom: 30px;">
+    <label class="lead large" for="filter" style="padding-right: 20px;">Filter:</label>
+    <input class="form-control" name="filter" id="filter" placeholder="Keyword">
+    <button type="submit" class="btn btn-primary" id="filterButton" style="margin-left: 20px;">Reset</button>
+</form>
+{{#if admin}}
+    <div class="container-fluid row d-flex justify-content-center">
+        {{#each products}}
+            <div class="card ml-3 mr-3 mb-3 mt-3 text-center" style="width:17rem">
+                <div class="hovereffect">
+                    <img src="{{this.image}}" class="card-img-top" alt="Product Image" style="height: 220px">
+                    <div class="overlay">
+                        <p class="text-white align-self-center" style="padding-top: 50px; padding-left: 15px; padding-right: 15px">
+                            {{this.description}}
+                        </p>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <h4 class="card-title">{{this.name}}</h4>
+                    <p class="card-text">${{this.price}}</p>
+                    <form method="post" id="deleteForm{{this._id}}" action="/products/{{this._id}}?_method=DELETE">
+                        <a class="btn btn-primary" href="/products-edit-form/{{this._id}}">Edit</a>
+                        <button type="button" id="deleteButton{{this._id}}" class="btn btn-danger">Delete</button>
+                    </form>
+                </div>
+            </div>
+        {{/each}}
+    </div>
+{{else}}
+    {{#if products}}
+        {{#if user}}
+            <div class="container text-center">
+                <a href="/ShoppingCart" class="button btn-primary" style="vertical-align:middle; border-radius: 25px"><span>Go to Cart {{#if cart}}({{length cart}}){{/if}}</span></a>
+            </div>
+        {{/if}}
+        <div class="container-fluid row d-flex justify-content-center">
+            {{#each products}}
+                <div class="card ml-3 mr-3 mb-3 mt-3 text-center" style="width:17rem">
+                    <div class="hovereffect">
+                        <img src="{{this.image}}" class="card-img-top" alt="Product Image" style="height: 220px">
+                        <div class="overlay">
+                            <p class="text-white align-self-center" style="padding-top: 50px; padding-left: 15px; padding-right: 15px">
+                                {{this.description}}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h4 class="card-title">{{this.name}}</h4>
+                        <p class="card-text">${{this.price}}</p>
+                        {{#if ../user}}
+                            <form method="post" action="/addCart/{{this._id}}">
+                                <div class="form-group justify-content-center" style="display:inline-flex;">
+                                    <label for="quantity">Amount: &nbsp;</label><input min="1" value="1" type="number" id="quantity" name="quantity" class="form-control col-4" required>
+                                </div>
+                                <button type="submit" class="btn btn-info" style="border-radius: 20px">Add to Cart</button>
+                            </form>
+                        {{else}}
+                            <a href="/Loginpage">Please Login to Purchase</a>
+                        {{/if}}
+                    </div>
+                </div>
+                <br>
+            {{/each}}
+        </div>
+    {{/if}}
+{{/if}}
+{{>footer}}
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script>
+        {{#each products}}
+        $(document).ready(function(){
+            $("#deleteButton{{this._id}}").on("click", function () {
+                swal({
+                    title: "Are you sure?",
+                    text: "Once deleted, you will not be able to recover this product!",
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true,
+                }).then((willDelete) => {
+                    if (willDelete) {
+                        $("#deleteForm{{this._id}}").submit();
+                    } else {
+                        swal("No changes were made");
+                    }
+                });
+            });
+        });
+        {{/each}}
+    $(document).ready(function () {
+        $("#filter").on("keydown", function () {
+            if($("#filter").val() === "")
+                $("#filterButton").html("Reset");
+            else
+                $("#filterButton").html("Search");
+        });
+        $("#filter").on("blur", function () {
+            if($("#filter").val() === "")
+                $("#filterButton").html("Reset");
+            else
+                $("#filterButton").html("Search");
+        });
+    });
+</script>
+</body>
+</html>
