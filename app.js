@@ -95,6 +95,7 @@ app.post('/upload', upload.single("picture"), (req, res) => {
 
 app.get('/upload', async (req, res) => {
     let db = utils.getDb();
+    fs.mkdirSync(__dirname+"/public", {recursive: true});
     let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     if (loggedIn(req) && JSON.parse(req.cookies.admin)){
         res.render('upload.hbs', {
