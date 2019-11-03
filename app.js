@@ -7,6 +7,22 @@ const moment = require('moment');
 const expressConfig = require('./expressConfig');
 const logger = require('./logger');
 const nodemailer = require('nodemailer');
+const multer = require("multer");
+const fs = require("fs");
+const crypto = require("crypto");
+const mime = require('mime');
+const upload = multer({
+    storage:
+        multer.diskStorage({
+        destination: function (req, file, cb) {
+            cb(null, __dirname+"/public")
+        },
+        filename: function (req, file, cb) {
+            crypto.pseudoRandomBytes(16, function (err, raw) {
+                cb(null, raw.toString('hex') + Date.now() + '.' + mime.getExtension(file.mimetype));
+            });
+        }
+    })});
 const adminPassword = "DFEMj1eX565Ec34dNd364TDSgKga12EGE4II43245H34NBHYU&TYT&IUuikjfnhyuuiBHGYT&*IJBgtui7uokb4ht78fofkdnfjgy5k";
 let app = express();
 const port = process.env.PORT || 8080;
@@ -65,6 +81,60 @@ app.get('/', async (req, res) => {
         cart: req.cookies.cart
     });
     res.clearCookie('currentMessage');
+});
+
+app.post('/upload', upload.single("picture"), (req, res) => {
+    if (req.file) {
+        res.cookie("currentMessage", "Successfully Uploaded");
+        res.redirect("/images");
+    } else {
+        res.cookie("currentMessage", "Failed Upload");
+        res.redirect("/images");
+    }
+});
+
+app.get('/upload', async (req, res) => {
+    let db = utils.getDb();
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
+    if (loggedIn(req) && JSON.parse(req.cookies.admin)){
+        res.render('Upload.hbs', {
+            title: "Images",
+            active: {Images: true},
+            user: req.cookies.username, site: site,
+            admin: JSON.parse(req.cookies.admin),
+            currentMessage: req.cookies.currentMessage,
+            cart: req.cookies.cart
+        });
+        res.clearCookie("currentMessage");
+    } else {
+        res.cookie('currentMessage', "Please Login as admin to view images");
+        res.redirect('/Loginpage');
+    }
+});
+
+app.get("/images", async (req, res) => {
+    let db = utils.getDb();
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
+    if (loggedIn(req) && JSON.parse(req.cookies.admin)){
+        fs.readdir(__dirname+"/public", ((err, files) => {
+            if (err){
+                logger.logerror(err, "Reading Images From Directory");
+                res.cookies("currentMessage", "Failed to load image files")
+            }
+            res.render("Images.hbs", {
+                files: files,
+                active: {Images: true}, title: "Images",
+                user: req.cookies.username, site: site,
+                admin: JSON.parse(req.cookies.admin),
+                currentMessage: req.cookies.currentMessage,
+                cart: req.cookies.cart
+            });
+            res.clearCookie("currentMessage");
+        }));
+    } else {
+        res.cookie('currentMessage', "Please Login as admin to view images");
+        res.redirect('/Loginpage');
+    }
 });
 
 app.get("/reviews", async (req, res) => {
@@ -133,7 +203,7 @@ app.post("/reviews", async (req, res) => {
                 res.redirect('/reviews-add-form');
             } else {
                 logger.logDB('Make Review', req.cookies.username);
-                res.cookie('currentMessage', 'Created Successfully');
+                res.cookie('currentMessage', 'Created Successfully, Your Review will be checked by Admins Before it is Published');
                 res.redirect('/reviews');
             }
         });
@@ -325,7 +395,7 @@ app.get('/ShoppingCart', async (req, res) => {
     if (loggedIn(req)) {
         let total = 0;
         for (let i in req.cookies.cart) {
-            total += req.cookies.cart[i].price * req.cookies.cart[i].quantity;
+            total += req.cookies.cart[i].salePrice * req.cookies.cart[i].quantity;
         }
         total = total.toFixed(2);
         res.render('ShoppingCart.hbs', {
@@ -346,7 +416,6 @@ app.get('/ShoppingCart', async (req, res) => {
 
 app.post('/deleteCart/:id', async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     let id = Number(req.params.id);
     for (let i in req.cookies.cart) {
         if (id === Number(req.cookies.cart[i].cartid)) {
@@ -364,7 +433,6 @@ app.post('/deleteCart/:id', async (req, res) => {
 
 app.post('/addCart/:id', async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     let product_id = req.params.id;
     let quantity = req.body.quantity;
     let cartid = 0;
@@ -386,7 +454,8 @@ app.post('/addCart/:id', async (req, res) => {
                 req.cookies.cart.push({
                     id: product_id,
                     quantity: quantity,
-                    price: result.price,
+                    suggestedPrice: result.suggestedPrice,
+                    salePrice: result.salePrice,
                     name: result.name,
                     cartid: cartid + 1,
                     image: result.image,
@@ -397,7 +466,8 @@ app.post('/addCart/:id', async (req, res) => {
                 res.cookie('cart', [{
                     id: product_id,
                     quantity: quantity,
-                    price: result.price,
+                    suggestedPrice: result.suggestedPrice,
+                    salePrice: result.salePrice,
                     name: result.name,
                     cartid: cartid + 1,
                     image: result.image,
@@ -423,7 +493,7 @@ app.post('/Checkout', async (req, res) => {
                 let cartid = Number(req.cookies.cart[i].cartid);
                 let item = req.cookies.cart[i].name;
                 let quantity = req.cookies.cart[i].quantity;
-                let unit_price = req.cookies.cart[i].price;
+                let unit_price = req.cookies.cart[i].salePrice;
                 let created_date_time = moment(new Date()).format("YYYY-MM-DD HH:mm:ss");
                 let db = utils.getDb();
                 db.collection('sales').insertOne({
@@ -997,28 +1067,22 @@ app.post('/contacts', async (req, res) => {
 
 app.post('/products', async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     if (loggedIn(req)) {
-        let name = req.body.name;
-        let price = req.body.price;
-        let url = req.body.image;
-        let desc = req.body.description;
-        let created_date_time = moment(new Date()).format("YYYY-MM-DD HH:mm:ss");
-        let db = utils.getDb();
         db.collection('products').insertOne({
-            name: name,
-            created_date_time: created_date_time,
-            update_date_time: created_date_time,
-            price: price,
-            image: url,
-            description: desc,
+            name: req.body.name,
+            created_date_time: moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),
+            update_date_time: moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),
+            suggestedPrice: req.body.suggestedPrice,
+            salePrice: req.body.salePrice,
+            image: req.body.image,
+            description: req.body.description,
         }, (err, result) => {
             if (err) {
                 logger.logerror(err, 'Make Product');
                 res.cookie('currentMessage', 'Unable to store products data');
                 res.redirect('/products-add-form');
             } else {
-                logger.logDB('Make Product, item: ' + name, req.cookies.username);
+                logger.logDB('Make Product, item: ' + req.body.name, req.cookies.username);
                 res.cookie('currentMessage', 'Created Successfully');
                 res.redirect('/products');
             }
@@ -1031,20 +1095,15 @@ app.post('/products', async (req, res) => {
 
 app.put('/products/:id', async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     loggedIn(req);
-    let name = req.body.name;
-    let price = req.body.price;
-    let url = req.body.image;
-    let desc = req.body.description;
-    let update_date_time = moment(new Date()).format("YYYY-MM-DD HH:mm:ss");
     db.collection("products").updateOne({_id: ObjectId(req.params.id)}, {
         $set: {
-            name: name,
-            price: price,
-            update_date_time: update_date_time,
-            image: url,
-            description: desc,
+            name: req.body.name,
+            suggestedPrice: req.body.suggestedPrice,
+            salePrice: req.body.salePrice,
+            update_date_time: moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),
+            image: req.body.image,
+            description: req.body.description,
         }
     }, function (err, result) {
         if (err) {
@@ -1065,7 +1124,6 @@ app.put('/products/:id', async (req, res) => {
 
 app.delete('/products/:id', async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     loggedIn(req);
     db.collection("products").findOneAndDelete({_id: ObjectId(req.params.id)}, function (err, result) {
         if (err) {
@@ -1733,6 +1791,9 @@ app.post('/editSite', async (req, res) => {
                     CardImage3:req.body.CardImage3,
                     CardTitle3:req.body.CardTitle3,
                     CardDesc3:req.body.CardDesc3,
+                    facebook: req.body.facebook,
+                    linkedin: req.body.linkedin,
+                    twitter: req.body.twitter,
                 }
             }, (err, result) => {
                 if (err)

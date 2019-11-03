@@ -17,10 +17,14 @@
             <form method="post" action="/products/{{product._id}}?_method=PUT">
                 <div class="form-row">
                     <div class="form-group col-12">
-                        <label for="name">Name</label>
+                        <label for="name">Name:</label>
                         <input type="text" class="form-control" name="name" id="name" placeholder="Name" required value="{{product.name}}">
-                        <label for="price">Price</label>
-                        <input type="number" step="any" id="price" name="price" class="form-control" required value="{{product.price}}"></input>
+                        <label for="suggestedPrice">Suggested Price:</label>
+                        <input type="number" step="any" id="suggestedPrice" name="suggestedPrice" class="form-control" required
+                               value="{{product.suggestedPrice}}"/>
+                        <label for="salePrice">Sale Price:</label>
+                        <input type="number" step="any" id="salePrice" name="salePrice" class="form-control" required
+                               value="{{product.salePrice}}"/>
                         <label for="image">Image:</label>
                         <input value="{{product.image}}" type="text" class="form-control" name="image" id="image" placeholder="Link:" required>
                         <label for="description">Description:</label>

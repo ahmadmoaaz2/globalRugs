@@ -33,16 +33,15 @@
 </style>
 {{>header}}
 <div class="container">
-
     <!-- Jumbotron Header -->
     <header class="jumbotron my-4">
         <h3 class="display-4">Hello, {{user}}!</h3>
         <p class="lead"> You can now modify the BAD donuts website using the functionality below. Once you make the changes,
             please remember to confirm.</p>
         <div class="text-center">
-            <a href="#down" class="btn btn-info btn-lg">Change general</a>
-            <a href="#contact" class="btn btn-info btn-lg">Change contact</a>
-            <a href="#home_page" class="btn btn-info btn-lg">Change homepage</a>
+            <button id="change_general" class="btn btn-info btn-lg">Change general</button>
+            <button id="change_contact_page" class="btn btn-info btn-lg">Change contact</button>
+            <button id="change_homepage" class="btn btn-info btn-lg">Change homepage</button>
         </div>
     </header>
 </div>
@@ -50,9 +49,9 @@
 
 <br>
 <form id="editForm1" action="/editSite" method="post" class="form mx-auto container-fluid">
-    <div id=down class="row container-fluid">
+    <div class="row container-fluid">
         <!--General-->
-        <div class="w-50">
+        <div id="general" class="d-none w-50">
             <div class="card h-100">
                 <div class="h2 card-header bg-dark text-center" style="color: white;">
                     General
@@ -71,31 +70,41 @@
                     <label>Copyright Date:</label>
                     <input class="form-control" placeholder="Date" name="CopyrightDate" value="{{site.CopyrightDate}}">
                     <br>
-                    <div id="contact">
-                        <div class="container-fluid h3 card-header bg-dark text-center" style="color: white;">
-                            Contact
-                        </div>
-                        <br>
-                        <label>Phone Number:</label>
-                        <input class="form-control" placeholder="Phone Number" name="PhoneNumber" value="{{site.PhoneNumber}}">
-                        <br>
-                        <label>Email:</label>
-                        <input class="form-control" placeholder="Email" name="Email" value="{{site.Email}}">
-                        <br>
-                        <label>Address:</label>
-                        <input class="form-control" placeholder="Address" name="Address" value="{{site.Address}}">
-                        <br>
-                        <label>Map Link:</label>
-                        <input class="form-control" placeholder="Map Link" name="MapLink" value="{{site.MapLink}}">
-                    </div>
+                    <label>Facebook Link:</label>
+                    <input class="form-control" placeholder="facebook.com" name="facebook" value="{{site.facebook}}">
+                    <br>
+                    <label>Linkedin Link:</label>
+                    <input class="form-control" placeholder="linkedin.com" name="linkedin" value="{{site.linkedin}}">
+                    <br>
+                    <label>Twitter Link:</label>
+                    <input class="form-control" placeholder="twitter.com" name="twitter" value="{{site.twitter}}">
+                    <br>
                 </div>
                 <div class="card-footer">
                     <button class="btn-outline-primary btn" type="button" id="editButton1">Confirm</button>
                 </div>
             </div>
         </div>
+        <!--CONTACT PAGE -->
+        <div id="contact_page" class="w-50 d-none">
+            <div class="container-fluid h3 card-header bg-dark text-center" style="color: white;">
+                Contact
+            </div>
+            <br>
+            <label>Phone Number:</label>
+            <input class="form-control" placeholder="Phone Number" name="PhoneNumber" value="{{site.PhoneNumber}}">
+            <br>
+            <label>Email:</label>
+            <input class="form-control" placeholder="Email" name="Email" value="{{site.Email}}">
+            <br>
+            <label>Address:</label>
+            <input class="form-control" placeholder="Address" name="Address" value="{{site.Address}}">
+            <br>
+            <label>Map Link:</label>
+            <input class="form-control" placeholder="Map Link" name="MapLink" value="{{site.MapLink}}">
+        </div>
         <!--HOME PAGE-->
-        <div id="home_page" class="w-50">
+        <div id="home_page" class="w-50 d-none">
             <div class="card h-100">
                 <div class="h2 card-header bg-dark text-center" style="color: white;">
                     Home Page
@@ -152,7 +161,7 @@
                 </div>
             </div>
         </div>
-        <div class="w-50">
+        <div id="home_page_preview" class="w-50 d-none">
             <div class="card">
                 <div class="h2 card-header bg-dark text-center" style="color: white;">
                     Home Page Preview
@@ -162,8 +171,7 @@
                 </div>
             </div>
         </div>
-
-        <div class="w-50">
+        <div id="contact_page_preview" class="w-50 d-none">
             <div class="card">
                 <div class="h2 card-header bg-dark text-center" style="color: white;">
                     Contact Page Preview
@@ -197,8 +205,6 @@
                 }
             });
         });
-    });
-    $(document).ready(function () {
         $("#editButton2").on("click", function () {
             swal({
                 title: "Are you sure?",
@@ -212,6 +218,27 @@
                     swal("No changes were made");
                 }
             });
+        });
+        $("#change_general").on("click", function () {
+            $("#general").removeClass("d-none");
+            $("#home_page_preview").removeClass("d-none");
+            $("#home_page").addClass("d-none");
+            $("#contact_page").addClass("d-none");
+            $("#contact_page_preview").addClass("d-none");
+        });
+        $("#change_contact_page").on("click", function () {
+            $("#general").addClass("d-none");
+            $("#home_page_preview").addClass("d-none");
+            $("#home_page").addClass("d-none");
+            $("#contact_page").removeClass("d-none");
+            $("#contact_page_preview").removeClass("d-none");
+        });
+        $("#change_homepage").on("click", function () {
+            $("#general").addClass("d-none");
+            $("#home_page_preview").removeClass("d-none");
+            $("#home_page").removeClass("d-none");
+            $("#contact_page").addClass("d-none");
+            $("#contact_page_preview").addClass("d-none");
         });
     });
 </script>

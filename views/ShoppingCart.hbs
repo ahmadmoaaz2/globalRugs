@@ -30,9 +30,9 @@
                     <tr>
                         <td><img src="{{this.image}}" alt="product" height="110px" width="110px"></td>
                         <td>{{this.name}}</td>
-                        <td>${{this.price}}</td>
+                        <td>SR${{this.salePrice}}</td>
                         <td>{{this.quantity}}</td>
-                        <td>${{multiply this.price this.quantity}}</td>
+                        <td>SR${{multiply this.salePrice this.quantity}}</td>
                         <td><button type="button" id="deleteButton{{this.cartid}}" class="btn btn-outline-danger">Delete</button></td>
                     </tr>
                 </form>
@@ -42,7 +42,7 @@
                 <td></td>
                 <td></td>
                 <td></td>
-                <td>${{total}}</td>
+                <td>SR${{total}}</td>
                 <td></td>
             </tr>
         {{else}}

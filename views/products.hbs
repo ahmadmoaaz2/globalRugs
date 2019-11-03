@@ -164,7 +164,8 @@
                 </div>
                 <div class="card-body">
                     <h4 class="card-title">{{this.name}}</h4>
-                    <p class="card-text">${{this.price}}</p>
+                    <p class="card-text">Suggested Price: SR${{this.suggestedPrice}}</p>
+                    <p class="card-text text-danger">Sale Price: SR${{this.salePrice}}</p>
                     <form method="post" id="deleteForm{{this._id}}" action="/products/{{this._id}}?_method=DELETE">
                         <a class="btn btn-primary" href="/products-edit-form/{{this._id}}">Edit</a>
                         <button type="button" id="deleteButton{{this._id}}" class="btn btn-danger">Delete</button>
@@ -193,7 +194,8 @@
                     </div>
                     <div class="card-body">
                         <h4 class="card-title">{{this.name}}</h4>
-                        <p class="card-text">${{this.price}}</p>
+                        <p class="card-text">Suggested Price: SR${{this.suggestedPrice}}</p>
+                        <p class="card-text text-danger">Sale Price: SR${{this.salePrice}}</p>
                         {{#if ../user}}
                             <form method="post" action="/addCart/{{this._id}}">
                                 <div class="form-group justify-content-center" style="display:inline-flex;">
