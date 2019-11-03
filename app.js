@@ -97,7 +97,7 @@ app.get('/upload', async (req, res) => {
     let db = utils.getDb();
     let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     if (loggedIn(req) && JSON.parse(req.cookies.admin)){
-        res.render('Upload.hbs', {
+        res.render('upload.hbs', {
             title: "Images",
             active: {Images: true},
             user: req.cookies.username, site: site,
