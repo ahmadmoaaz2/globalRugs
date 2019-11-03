@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="icon" href="{{site.Logo}}">
+
+    <title>{{site.SiteName}}</title>
+
+</head>
+<body class="text-center">
+{{>header}}
+<br></br>
+<br></br>
+{{#if admin}}
+    {{#if reviews}}
+        {{#each reviews}}
+            {{#if visible}}
+                <div class="jumbotron container d-block text-center" style="padding:5px;">
+                    <p class="text-info">{{account}} says:</p>
+                    <p class="text-info">{{review}}</p>
+                    <p class="text-default small">{{this.time}}</p>
+                    <p class="text-default small">Approved?: {{approved}}</p>
+                    <div class="container text-center d-flex" style="padding-left: 43%">
+                        <form method="post" action="/reviewAdmin/{{_id}}">
+                            <button class="btn-success btn" type="submit">Approve</button>
+                        </form>
+                        <form method="post" action="/reviewAdmin/{{_id}}?_method=PUT">
+                            <button class="btn-danger btn" type="submit">Remove</button>
+                        </form>
+                    </div>
+                </div>
+            {{/if}}
+        {{/each}}
+    {{else}}
+        <div class="jumbotron container d-block text-center" style="padding:5px;">
+            <p class="text-info">No reviews yet.</p>
+        </div>
+    {{/if}}
+{{else}}
+    {{#if reviewByUser}}{{else}}
+        <a class="btn btn-info" href="/reviews-add-form" style="margin-bottom: 7px">Add Review</a>
+    {{/if}}
+    {{#if reviews}}
+        {{#each reviews}}
+            {{#if approved}}
+                <div class="jumbotron container d-block text-center" style="padding:5px;">
+                    <p class="text-info">{{account}} says:</p>
+                    <p class="text-info">{{review}}</p>
+                    <p class="text-default small">{{this.time}}</p>
+                    {{#if (eq ../user account)}}
+                        <form method="post" action="/review/{{_id}}?_method=DELETE">
+                            <button class="btn-danger btn" type="submit">Delete</button>
+                        </form>
+                    {{/if}}
+                </div>
+            {{/if}}
+        {{/each}}
+        {{#if noneApproved}}
+            <div class="jumbotron container d-block text-center" style="padding:5px;">
+                <p class="text-info">No reviews yet. Be The first to Leave a review!</p>
+            </div>
+        {{/if}}
+    {{else}}
+        <div class="jumbotron container d-block text-center" style="padding:5px;">
+            <p class="text-info">No reviews yet. Be The first to Leave a review!</p>
+        </div>
+    {{/if}}
+{{/if}}
+{{>footer}}
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+<script src="app.js"></script>
+</body>
+</html>

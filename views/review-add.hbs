@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="icon" href="{{site.Logo}}">
+
+    <title>{{site.SiteName}}</title>
+</head>
+<body class="d-flex flex-column">
+{{>header}}
+<br>
+<div class="container" style="justify-content: space-between;flex-direction: column;display: flex;">
+    <h1>Add Review</h1>
+    <form method="post" action="/reviews">
+        <div class="form-row">
+            <div class="form-group col-12">
+                <div class="d-flex" style="padding-bottom: 8px;">
+                    <label for="rating" class="h4" style="padding-top: 5px">Rating:</label>
+                    <button type="button" class="invisible" style="padding: 0px;">
+                        <a class="visible h3" id="1star">☆</a>
+                    </button>
+                    <button type="button" class="invisible" style="padding: 0px;">
+                        <a class="visible h3" id="2star">☆</a>
+                    </button>
+                    <button type="button" class="invisible" style="padding: 0px;">
+                        <a class="visible h3" id="3star">☆</a>
+                    </button>
+                    <button type="button" class="invisible" style="padding: 0px;">
+                        <a class="visible h3" id="4star">☆</a>
+                    </button>
+                    <button type="button" class="invisible" style="padding: 0px;">
+                        <a class="visible h3" id="5star">☆</a>
+                    </button>
+                </div>
+                <input name="rating" id="rating" class="d-none" required>
+                <label for="review">Review:</label>
+                <textarea class="form-control" name="review" id="review" placeholder="Review..." required></textarea>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-success">Submit</button>
+        <a href="/reviews" class="btn btn-primary">Go Back</a>
+    </form>
+    <div>
+    </div>
+</div>
+{{>footer}}
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script>
+    $(document).ready(function () {
+        let clicked = false;
+        $("#1star").hover(function () {
+            if (clicked)
+                return;
+            $("#1star").html("★");
+            $("#2star").html("☆");
+            $("#3star").html("☆");
+            $("#4star").html("☆");
+            $("#5star").html("☆");
+            $("#rating").val(1);
+        });
+        $("#2star").hover(function () {
+            if (clicked)
+                return;
+            $("#1star").html("★");
+            $("#2star").html("★");
+            $("#3star").html("☆");
+            $("#4star").html("☆");
+            $("#5star").html("☆");
+            $("#rating").val(2);
+        });
+        $("#3star").hover(function () {
+            if (clicked)
+                return;
+            $("#1star").html("★");
+            $("#2star").html("★");
+            $("#3star").html("★");
+            $("#4star").html("☆");
+            $("#5star").html("☆");
+            $("#rating").val(3);
+        });
+        $("#4star").hover(function () {
+            if (clicked)
+                return;
+            $("#1star").html("★");
+            $("#2star").html("★");
+            $("#3star").html("★");
+            $("#4star").html("★");
+            $("#5star").html("☆");
+            $("#rating").val(4);
+        });
+        $("#5star").hover(function () {
+            if (clicked)
+                return;
+            $("#1star").html("★");
+            $("#2star").html("★");
+            $("#3star").html("★");
+            $("#4star").html("★");
+            $("#5star").html("★");
+            $("#rating").val(5);
+        });
+        $("#1star").click(function () {
+            clicked = true;
+            $("#1star").html("★");
+            $("#2star").html("☆");
+            $("#3star").html("☆");
+            $("#4star").html("☆");
+            $("#5star").html("☆");
+            $("#rating").val(1);
+        });
+        $("#2star").click(function () {
+            clicked = true;
+            $("#1star").html("★");
+            $("#2star").html("★");
+            $("#3star").html("☆");
+            $("#4star").html("☆");
+            $("#5star").html("☆");
+            $("#rating").val(2);
+        });
+        $("#3star").click(function () {
+            clicked = true;
+            $("#1star").html("★");
+            $("#2star").html("★");
+            $("#3star").html("★");
+            $("#4star").html("☆");
+            $("#5star").html("☆");
+            $("#rating").val(3);
+        });
+        $("#4star").click(function () {
+            clicked = true;
+            $("#1star").html("★");
+            $("#2star").html("★");
+            $("#3star").html("★");
+            $("#4star").html("★");
+            $("#5star").html("☆");
+            $("#rating").val(4);
+        });
+        $("#5star").click(function () {
+            clicked = true;
+            $("#1star").html("★");
+            $("#2star").html("★");
+            $("#3star").html("★");
+            $("#4star").html("★");
+            $("#5star").html("★");
+            $("#rating").val(5);
+        });
+    })
+</script>
+</body>
+</html>

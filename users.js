@@ -148,10 +148,9 @@ function rotateLeft( array, amount) {
 
 // Authenticates a User
 let authenticate = (name, password, callback) => {
-    password = encrypt(password);
     let db = utils.getDb();
     let message = undefined;
-    db.collection('users').findOne({name:name,password:password}, (err, result)=>{
+    db.collection('users').findOne({name:name}, (err, result)=>{
         if (err)
             logger.logerror(err, "Authenticating User");
         else if (result === null) {
@@ -160,9 +159,15 @@ let authenticate = (name, password, callback) => {
             callback(message, false);
         }
         else {
-            logger.loguser("Log In", "Success", name);
-            message =  "Logged In";
-            callback(message, result.admin);
+            if (password === decrypt(result.password)) {
+                logger.loguser("Log In", "Success", name);
+                message = "Logged In";
+                callback(message, result.admin);
+            } else {
+                logger.loguser("Log In", "Failed (No Matching Users)", name);
+                message =  "No Matching Users";
+                callback(message, false);
+            }
         }
     });
 };

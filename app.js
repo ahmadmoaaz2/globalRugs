@@ -54,7 +54,7 @@ let loggedIn = utils.loggedIn;
 
 app.get('/', async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5ce567091c9d440000aea508")});
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     loggedIn(req);
     res.render('Homepage.hbs', {
         title: "Home",
@@ -67,9 +67,149 @@ app.get('/', async (req, res) => {
     res.clearCookie('currentMessage');
 });
 
+app.get("/reviews", async (req, res) => {
+    let db = utils.getDb();
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
+    loggedIn(req);
+    db.collection("reviews").find().toArray((err, reviews) => {
+        if (err)
+            logger.logerror(err,"Load Reviews Page");
+        let reviewByUser = false;
+        let nonApproved = true;
+        for (let review of reviews) {
+            if (req.cookies.username === review.account)
+                reviewByUser = true;
+            if (review.approved === true)
+                nonApproved = !review.approved;
+        }
+        res.render('Reviews.hbs', {
+            title: "Reviews",
+            reviews: reviews,
+            noneApproved: nonApproved,
+            reviewByUser: reviewByUser,
+            active: {Reviews: true},
+            user: req.cookies.username, site: site,
+            admin: JSON.parse(req.cookies.admin),
+            currentMessage: req.cookies.currentMessage,
+            cart: req.cookies.cart
+        });
+        res.clearCookie('currentMessage');
+    });
+});
+
+app.get("/reviews-add-form", async (req, res) => {
+    let db = utils.getDb();
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
+    if(loggedIn(req)) {
+        res.render('review-add.hbs', {
+            title: "Add Review",
+            active: {Reviews: true},
+            user: req.cookies.username, site: site,
+            admin: JSON.parse(req.cookies.admin),
+            currentMessage: req.cookies.currentMessage,
+            cart: req.cookies.cart
+        });
+        res.clearCookie('currentMessage');
+    } else {
+        res.cookie("currentMessage", "Please Login to post a review");
+        res.redirect("/Loginpage")
+    }
+});
+
+app.post("/reviews", async (req, res) => {
+    let db = utils.getDb();
+    if (loggedIn(req)) {
+        db.collection('reviews').insertOne({
+            rating: req.body.rating,
+            time: moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),
+            review: req.body.review,
+            approved: false,
+            visible: true,
+            account: req.cookies.username,
+        }, (err, result) => {
+            if (err) {
+                logger.logerror(err, 'Make Review');
+                res.cookie('currentMessage', 'Unable to make review');
+                res.redirect('/reviews-add-form');
+            } else {
+                logger.logDB('Make Review', req.cookies.username);
+                res.cookie('currentMessage', 'Created Successfully');
+                res.redirect('/reviews');
+            }
+        });
+    } else {
+        res.cookie('currentMessage', "Please Login to add reviews");
+        res.redirect('/Loginpage');
+    }
+});
+
+app.post("/reviewAdmin/:id", async (req, res) => {
+    let db = utils.getDb();
+    if (loggedIn(req) && JSON.parse(req.cookies.admin) === true){
+        db.collection("reviews").updateOne({_id:ObjectId(req.params.id)}, {
+            $set: {approved: true}
+        }, (err, result) => {
+            if (err){
+                logger.logerror(err, "Approve Review");
+                res.cookie("currentMessage", "Failed to approve Review");
+                res.redirect("/reviews")
+            } else {
+                logger.logDB("Approve Review", req.cookies.username);
+                res.cookie("currentMessage", "Successfully Approved Review");
+                res.redirect("/reviews")
+            }
+        })
+    } else {
+        res.cookie('currentMessage', "Please Login as Admin to edit reviews");
+        res.redirect('/Loginpage');
+    }
+});
+
+app.put("/reviewAdmin/:id", async (req, res) => {
+    let db = utils.getDb();
+    if (loggedIn(req) && JSON.parse(req.cookies.admin) === true){
+        db.collection("reviews").updateOne({_id:ObjectId(req.params.id)}, {
+            $set: {visible: false}
+        }, (err, result) => {
+            if (err){
+                logger.logerror(err, "Remove Review");
+                res.cookie("currentMessage", "Failed to Remove Review");
+                res.redirect("/reviews")
+            } else {
+                logger.logDB("Remove Review", req.cookies.username);
+                res.cookie("currentMessage", "Successfully Removed Review");
+                res.redirect("/reviews")
+            }
+        })
+    } else {
+        res.cookie('currentMessage', "Please Login as Admin to edit reviews");
+        res.redirect('/Loginpage');
+    }
+});
+
+app.delete("/review/:id", async (req, res) => {
+    let db = utils.getDb();
+    if (loggedIn(req)){
+        db.collection("reviews").findOneAndDelete({_id:ObjectId(req.params.id)}, (err, result) => {
+            if (err){
+                logger.logerror(err, "Delete User Review");
+                res.cookie("currentMessage", "Failed to delete Review");
+                res.redirect('/reviews')
+            } else {
+                logger.logDB("Delte Review", req.cookies.username);
+                res.cookie("currentMessage", "Succesfully Deleted");
+                res.redirect("/reviews")
+            }
+        })
+    } else {
+        res.cookie("currentMessage", "You cannot delete others reviews");
+        res.redirect("/reviews")
+    }
+});
+
 app.get('/Loginpage', async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5ce567091c9d440000aea508")});
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     if (loggedIn(req)) {
         res.cookie('currentMessage', "Already Logged In");
         res.redirect("/")
@@ -87,7 +227,7 @@ app.get('/Loginpage', async (req, res) => {
 
 app.get('/Makeaccountpage', async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5ce567091c9d440000aea508")});
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     if (loggedIn(req)) {
         res.cookie('currentMessage', "Already Logged In");
         res.redirect("/")
@@ -105,7 +245,7 @@ app.get('/Makeaccountpage', async (req, res) => {
 
 app.get('/Adminmakeaccountpage', async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5ce567091c9d440000aea508")});
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     if (loggedIn(req)) {
         res.cookie('currentMessage', "Already Logged In");
         res.redirect("/");
@@ -129,7 +269,7 @@ app.get('/Adminmakeaccountpage', async (req, res) => {
 
 app.get('/admincheck', async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5ce567091c9d440000aea508")});
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     loggedIn(req);
     if (JSON.parse(req.cookies.admin) === true) {
         res.cookie('currentMessage', "Already an admin");
@@ -148,7 +288,7 @@ app.get('/admincheck', async (req, res) => {
 
 app.get('/Contact', async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5ce567091c9d440000aea508")});
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     loggedIn(req);
     db.collection('logs').find({logtype: "userMessages"}).toArray((err, result) => {
         if (err)
@@ -181,7 +321,7 @@ app.get('/Contact', async (req, res) => {
 
 app.get('/ShoppingCart', async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5ce567091c9d440000aea508")});
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     if (loggedIn(req)) {
         let total = 0;
         for (let i in req.cookies.cart) {
@@ -206,7 +346,7 @@ app.get('/ShoppingCart', async (req, res) => {
 
 app.post('/deleteCart/:id', async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5ce567091c9d440000aea508")});
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     let id = Number(req.params.id);
     for (let i in req.cookies.cart) {
         if (id === Number(req.cookies.cart[i].cartid)) {
@@ -224,7 +364,7 @@ app.post('/deleteCart/:id', async (req, res) => {
 
 app.post('/addCart/:id', async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5ce567091c9d440000aea508")});
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     let product_id = req.params.id;
     let quantity = req.body.quantity;
     let cartid = 0;
@@ -271,7 +411,7 @@ app.post('/addCart/:id', async (req, res) => {
 
 app.post('/Checkout', async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5ce567091c9d440000aea508")});
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     if (loggedIn(req)) {
         if (req.cookies.cart.length === 0) {
             res.cookie("currentMessage", "No items in cart");
@@ -316,7 +456,7 @@ app.post('/Checkout', async (req, res) => {
 
 app.get('/Logout', async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5ce567091c9d440000aea508")});
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     logger.loguser("Logout", "Success", req.cookies.username);
     res.clearCookie('username');
     res.clearCookie("disabledCount");
@@ -328,7 +468,7 @@ app.get('/Logout', async (req, res) => {
 
 app.post('/register', async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5ce567091c9d440000aea508")});
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     let username = req.body.name;
     let password = req.body.password;
     let email = req.body.email;
@@ -345,7 +485,7 @@ app.post('/register', async (req, res) => {
 
 app.post('/registerAdmin', async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5ce567091c9d440000aea508")});
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     if (!JSON.parse(req.cookies.admin)) {
         res.cookie('currentMessage', "No Access to this page");
         res.redirect('/Adminmakeaccountpage');
@@ -367,7 +507,7 @@ app.post('/registerAdmin', async (req, res) => {
 
 app.post('/VerifyAdminPass', async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5ce567091c9d440000aea508")});
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     let password = req.body.password;
     if (password === adminPassword) {
         res.cookie('admin', true);
@@ -381,7 +521,7 @@ app.post('/VerifyAdminPass', async (req, res) => {
 
 app.post('/login', async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5ce567091c9d440000aea508")});
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     if (Number(req.cookies.disabledCount) >= 5) {
         res.cookie("currentMessage", "Your IP has been disabled for 1 minute");
         res.cookie("disabledCount", 5, {maxAge: 60000});
@@ -411,7 +551,7 @@ app.post('/login', async (req, res) => {
 
 app.get('/logs', async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5ce567091c9d440000aea508")});
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     if (loggedIn(req)) {
         users.checkAdmin(req.cookies.username, (result) => {
             if (!result) {
@@ -463,7 +603,7 @@ app.get('/logs', async (req, res) => {
 
 app.get("/logsError", async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5ce567091c9d440000aea508")});
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     if (loggedIn(req)) {
         users.checkAdmin(req.cookies.username, (result) => {
             if (!result) {
@@ -515,7 +655,7 @@ app.get("/logsError", async (req, res) => {
 
 app.get("/logsLogin", async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5ce567091c9d440000aea508")});
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     if (loggedIn(req)) {
         users.checkAdmin(req.cookies.username, (result) => {
             if (!result) {
@@ -567,7 +707,7 @@ app.get("/logsLogin", async (req, res) => {
 
 app.get("/logsDB", async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5ce567091c9d440000aea508")});
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     if (loggedIn(req)) {
         users.checkAdmin(req.cookies.username, (result) => {
             if (!result) {
@@ -619,7 +759,7 @@ app.get("/logsDB", async (req, res) => {
 
 app.get('/sales', async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5ce567091c9d440000aea508")});
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     if (loggedIn(req)) {
         let db = utils.getDb();
         db.collection('sales').find({}).toArray((err, result) => {
@@ -675,7 +815,7 @@ app.get('/sales', async (req, res) => {
 
 app.get('/sales-add-form', async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5ce567091c9d440000aea508")});
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     if (loggedIn(req)) {
         let db = utils.getDb();
         db.collection('products').find({}).toArray((err, result) => {
@@ -703,7 +843,7 @@ app.get('/sales-add-form', async (req, res) => {
 
 app.get('/sales-edit-form/:id', async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5ce567091c9d440000aea508")});
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     if (loggedIn(req)) {
         let db = utils.getDb();
         db.collection("sales").findOne({_id: ObjectId(req.params.id)}, function (err, result) {
@@ -742,7 +882,7 @@ app.get('/sales-edit-form/:id', async (req, res) => {
 
 app.post('/sales', async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5ce567091c9d440000aea508")});
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     if (loggedIn(req)) {
         let item = req.body.item;
         let quantity = req.body.quantity;
@@ -775,7 +915,7 @@ app.post('/sales', async (req, res) => {
 
 app.put('/sales/:id', async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5ce567091c9d440000aea508")});
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     loggedIn(req);
     let item = req.body.item;
     let price = req.body.price;
@@ -808,7 +948,7 @@ app.put('/sales/:id', async (req, res) => {
 
 app.delete('/sales/:id', async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5ce567091c9d440000aea508")});
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     loggedIn(req);
     db.collection("sales").findOneAndDelete({_id: ObjectId(req.params.id)}, function (err, result) {
         if (err) {
@@ -829,7 +969,7 @@ app.delete('/sales/:id', async (req, res) => {
 
 app.get('/sales/:id', async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5ce567091c9d440000aea508")});
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     loggedIn(req);
     db.collection("sales").findOne({_id: ObjectId(req.params.id)}, function (err, result) {
         if (err) {
@@ -844,7 +984,7 @@ app.get('/sales/:id', async (req, res) => {
 
 app.post('/contacts', async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5ce567091c9d440000aea508")});
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     loggedIn(req);
     let name = req.body.name;
     let email = req.body.email;
@@ -857,7 +997,7 @@ app.post('/contacts', async (req, res) => {
 
 app.post('/products', async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5ce567091c9d440000aea508")});
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     if (loggedIn(req)) {
         let name = req.body.name;
         let price = req.body.price;
@@ -891,7 +1031,7 @@ app.post('/products', async (req, res) => {
 
 app.put('/products/:id', async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5ce567091c9d440000aea508")});
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     loggedIn(req);
     let name = req.body.name;
     let price = req.body.price;
@@ -925,7 +1065,7 @@ app.put('/products/:id', async (req, res) => {
 
 app.delete('/products/:id', async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5ce567091c9d440000aea508")});
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     loggedIn(req);
     db.collection("products").findOneAndDelete({_id: ObjectId(req.params.id)}, function (err, result) {
         if (err) {
@@ -946,7 +1086,7 @@ app.delete('/products/:id', async (req, res) => {
 
 app.get('/products', async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5ce567091c9d440000aea508")});
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     loggedIn(req);
     db.collection('products').find({}).toArray((err, result) => {
         if (err) {
@@ -988,7 +1128,7 @@ app.get('/products', async (req, res) => {
 
 app.get('/products-add-form', async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5ce567091c9d440000aea508")});
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     if (loggedIn(req)) {
         res.render('products-add-form.hbs', {
             title: "Products",
@@ -1007,7 +1147,7 @@ app.get('/products-add-form', async (req, res) => {
 
 app.get('/products-edit-form/:id', async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5ce567091c9d440000aea508")});
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     if (loggedIn(req)) {
         let db = utils.getDb();
         db.collection("products").findOne({_id: ObjectId(req.params.id)}, function (err, result) {
@@ -1039,7 +1179,7 @@ app.get('/products-edit-form/:id', async (req, res) => {
 
 app.get('/users', async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5ce567091c9d440000aea508")});
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     if (loggedIn(req)) {
         users.checkAdmin(req.cookies.username, (result) => {
             if (!result) {
@@ -1099,7 +1239,7 @@ app.get('/users', async (req, res) => {
 
 app.post('/deleteUser/:id', async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5ce567091c9d440000aea508")});
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     if (loggedIn(req)) {
         users.checkAdmin(req.cookies.username, (result) => {
             if (!result) {
@@ -1130,7 +1270,7 @@ app.post('/deleteUser/:id', async (req, res) => {
 
 app.post('/editUser/:id', async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5ce567091c9d440000aea508")});
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     if (loggedIn(req)) {
         users.checkAdmin(req.cookies.username, (result) => {
             if (!result) {
@@ -1215,7 +1355,7 @@ app.post('/editUser/:id', async (req, res) => {
 
 app.get("/forgotPassword", async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5ce567091c9d440000aea508")});
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     if (loggedIn(req)) {
         res.cookie("currentMessage", "Already Logged In");
         res.redirect('/');
@@ -1231,7 +1371,7 @@ app.get("/forgotPassword", async (req, res) => {
 
 app.get("/forgotUsername", async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5ce567091c9d440000aea508")});
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     if (loggedIn(req)) {
         res.cookie("currentMessage", "Already Logged In");
         res.redirect('/');
@@ -1247,7 +1387,7 @@ app.get("/forgotUsername", async (req, res) => {
 
 app.post("/forgotPassword", async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5ce567091c9d440000aea508")});
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     if (loggedIn(req)) {
         res.cookie("currentMessage", "Already Logged In");
         res.redirect('/');
@@ -1312,7 +1452,7 @@ app.post("/forgotPassword", async (req, res) => {
 
 app.post("/forgotUsername", async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5ce567091c9d440000aea508")});
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     if (loggedIn(req)) {
         res.cookie("currentMessage", "Already Logged In");
         res.redirect('/');
@@ -1359,7 +1499,7 @@ app.post("/forgotUsername", async (req, res) => {
 
 app.get('/account', async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5ce567091c9d440000aea508")});
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     if (loggedIn(req)) {
         let db = utils.getDb();
         db.collection('users').findOne({name: req.cookies.username}, (err, result) => {
@@ -1387,7 +1527,7 @@ app.get('/account', async (req, res) => {
 
 app.post('/changeEmail/:id', async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5ce567091c9d440000aea508")});
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     if (loggedIn(req)) {
         let db = utils.getDb();
         db.collection("users").updateOne({_id: ObjectId(req.params.id)}, {
@@ -1415,7 +1555,7 @@ app.post('/changeEmail/:id', async (req, res) => {
 
 app.post('/changePassword/:id', async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5ce567091c9d440000aea508")});
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     if (loggedIn(req)) {
         let db = utils.getDb();
         db.collection("users").updateOne({_id: ObjectId(req.params.id)}, {
@@ -1443,7 +1583,7 @@ app.post('/changePassword/:id', async (req, res) => {
 
 app.post('/changeUsername/:id', async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5ce567091c9d440000aea508")});
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     if (loggedIn(req)) {
         let oldName = req.cookies.username;
         let db = utils.getDb();
@@ -1503,7 +1643,7 @@ app.post('/changeUsername/:id', async (req, res) => {
 
 app.post('/deleteUserA/:id', async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5ce567091c9d440000aea508")});
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     if (loggedIn(req)) {
         let db = utils.getDb();
         db.collection("users").findOneAndDelete({_id: ObjectId(req.params.id)}, (err, result) => {
@@ -1534,7 +1674,7 @@ app.get('/site', async (req, res) => {
                 return;
             }
             let db = utils.getDb();
-            db.collection("site").findOne({_id: ObjectId("5ce567091c9d440000aea508")}, (err, result) => {
+            db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")}, (err, result) => {
                 if (err)
                     logger.logerror(err, "Display Users");
                 else if (!result) {
@@ -1568,7 +1708,7 @@ app.post('/editSite', async (req, res) => {
                 return;
             }
             let db = utils.getDb();
-            db.collection("site").updateOne({_id: ObjectId("5ce567091c9d440000aea508")}, {
+            db.collection("site").updateOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")}, {
                 $set:{
                     CopyrightDate: req.body.CopyrightDate,
                     NavColor: req.body.NavColor,
@@ -1611,7 +1751,7 @@ app.post('/editSite', async (req, res) => {
 
 app.get("/clearServerVisitLogs", async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5ce567091c9d440000aea508")});
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     if (req.cookies.username === "adminacc")
         utils.getDb().collection("logs").updateOne({logtype: "serverVisit"}, {
             $set: {
@@ -1631,7 +1771,7 @@ app.get("/clearServerVisitLogs", async (req, res) => {
 
 app.get("/clearAllLogs", async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5ce567091c9d440000aea508")});
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     if (req.cookies.username === "adminacc")
         utils.getDb().collection("logs").updateOne({logtype: "serverVisit"}, {
             $set: {
@@ -1669,15 +1809,19 @@ app.get("/clearAllLogs", async (req, res) => {
 
 app.get('/cheat', async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5ce567091c9d440000aea508")});
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     res.render('cheat.hbs', {site: site})
 });
 
 app.get("*", async (req, res) => {
     let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5ce567091c9d440000aea508")});
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     loggedIn(req);
-    res.render("404.hbs")
+    res.render("404.hbs",{site: site,
+        user: req.cookies.username,
+        admin: JSON.parse(req.cookies.admin),
+        currentMessage: req.cookies.currentMessage,
+        title: "404",})
 });
 
 app.listen(port, () => {
