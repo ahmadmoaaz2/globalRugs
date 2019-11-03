@@ -119,7 +119,7 @@ app.get("/images", async (req, res) => {
         fs.readdir(__dirname+"/public", ((err, files) => {
             if (err){
                 logger.logerror(err, "Reading Images From Directory");
-                res.cookies("currentMessage", "Failed to load image files")
+                res.cookie("currentMessage", "Failed to load image files")
             }
             res.render("Images.hbs", {
                 files: files,
