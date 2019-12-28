@@ -537,22 +537,23 @@ app.get('/Logout', async (req, res) => {
     res.redirect('/');
 });
 
-app.post('/register', async (req, res) => {
-    let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
-    let username = req.body.name;
-    let password = req.body.password;
-    let email = req.body.email;
-    users.addUser(String(username), String(password), String(email), (message) => {
-        if (message === "Created Successfully") {
-            res.cookie('username', username);
-            res.redirect('/')
-        } else {
-            res.cookie('currentMessage', message);
-            res.redirect('/Makeaccountpage')
-        }
-    });
-});
+// Disabled
+// app.post('/register', async (req, res) => {
+//     let db = utils.getDb();
+//     let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
+//     let username = req.body.name;
+//     let password = req.body.password;
+//     let email = req.body.email;
+//     users.addUser(String(username), String(password), String(email), (message) => {
+//         if (message === "Created Successfully") {
+//             res.cookie('username', username);
+//             res.redirect('/')
+//         } else {
+//             res.cookie('currentMessage', message);
+//             res.redirect('/Makeaccountpage')
+//         }
+//     });
+// });
 
 app.post('/registerAdmin', async (req, res) => {
     let db = utils.getDb();
@@ -828,61 +829,62 @@ app.get("/logsDB", async (req, res) => {
     }
 });
 
-app.get('/sales', async (req, res) => {
-    let db = utils.getDb();
-    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
-    if (loggedIn(req)) {
-        let db = utils.getDb();
-        db.collection('sales').find({}).toArray((err, result) => {
-            if (err) {
-                logger.logerror(err, 'Get Sales');
-                res.cookie('currentMessage', 'Unable to retrieve sales data');
-                res.redirect('/sales');
-                return;
-            }
-            if (req.query.filter) {
-                let newResult = [];
-                for (let J in result) {
-                    let testString = `${result[J].created_date_time} ${result[J].update_date_time} ${result[J].item} ${result[J].user} ${result[J].quantity} ${result[J].unit_price}`.toLowerCase();
-                    if (testString.includes(req.query.filter.toLowerCase())) {
-                        newResult.push(result[J])
-                    }
-                }
-                result = newResult;
-            }
-            result.reverse();
-            if (JSON.parse(req.cookies.admin))
-                res.render('sales.hbs', {
-                    title: "Sales",
-                    active: {Sales: true},
-                    sales: result,
-                    user: req.cookies.username, site: site,
-                    admin: JSON.parse(req.cookies.admin),
-                    currentMessage: req.cookies.currentMessage,
-                    cart: req.cookies.cart
-                });
-            else {
-                let filtered = [];
-                for (let i in result) {
-                    if (result[i].user === req.cookies.username)
-                        filtered.push(result[i])
-                }
-                res.render('sales.hbs', {
-                    sales: filtered,
-                    user: req.cookies.username, site: site,
-                    admin: JSON.parse(req.cookies.admin),
-                    currentMessage: req.cookies.currentMessage,
-                    cart: req.cookies.cart,
-                    title: "Sales", active: {Sales: true}
-                });
-            }
-            res.clearCookie('currentMessage');
-        });
-    } else {
-        res.cookie('currentMessage', "Please Login to view sales");
-        res.redirect('/Loginpage');
-    }
-});
+// Disabled
+// app.get('/sales', async (req, res) => {
+//     let db = utils.getDb();
+//     let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
+//     if (loggedIn(req)) {
+//         let db = utils.getDb();
+//         db.collection('sales').find({}).toArray((err, result) => {
+//             if (err) {
+//                 logger.logerror(err, 'Get Sales');
+//                 res.cookie('currentMessage', 'Unable to retrieve sales data');
+//                 res.redirect('/sales');
+//                 return;
+//             }
+//             if (req.query.filter) {
+//                 let newResult = [];
+//                 for (let J in result) {
+//                     let testString = `${result[J].created_date_time} ${result[J].update_date_time} ${result[J].item} ${result[J].user} ${result[J].quantity} ${result[J].unit_price}`.toLowerCase();
+//                     if (testString.includes(req.query.filter.toLowerCase())) {
+//                         newResult.push(result[J])
+//                     }
+//                 }
+//                 result = newResult;
+//             }
+//             result.reverse();
+//             if (JSON.parse(req.cookies.admin))
+//                 res.render('sales.hbs', {
+//                     title: "Sales",
+//                     active: {Sales: true},
+//                     sales: result,
+//                     user: req.cookies.username, site: site,
+//                     admin: JSON.parse(req.cookies.admin),
+//                     currentMessage: req.cookies.currentMessage,
+//                     cart: req.cookies.cart
+//                 });
+//             else {
+//                 let filtered = [];
+//                 for (let i in result) {
+//                     if (result[i].user === req.cookies.username)
+//                         filtered.push(result[i])
+//                 }
+//                 res.render('sales.hbs', {
+//                     sales: filtered,
+//                     user: req.cookies.username, site: site,
+//                     admin: JSON.parse(req.cookies.admin),
+//                     currentMessage: req.cookies.currentMessage,
+//                     cart: req.cookies.cart,
+//                     title: "Sales", active: {Sales: true}
+//                 });
+//             }
+//             res.clearCookie('currentMessage');
+//         });
+//     } else {
+//         res.cookie('currentMessage', "Please Login to view sales");
+//         res.redirect('/Loginpage');
+//     }
+// });
 
 app.get('/sales-add-form', async (req, res) => {
     let db = utils.getDb();
@@ -1489,7 +1491,7 @@ app.post("/forgotPassword", async (req, res) => {
                         to: req.body.email,
                         subject: 'Forgotten Password',
                         text: `Hey there ${result.name}, \n
-                        \nYour Password on Bad Donuts has been reset. Your new password is:
+                        \nYour Password on ${site.SiteName} has been reset. Your new password is:
                         \n${string}
                         \nWe recommend signing into your account and changing the password as soon as possible. If this was not you or for more support, Visit the "Contact Us" page to get in touch with an Admin.`
                     };
@@ -1497,7 +1499,7 @@ app.post("/forgotPassword", async (req, res) => {
                         if (error) {
                             logger.logerror(err, "Sending Forgot Password Email")
                         } else {
-                            res.cookie("currentMessage", "Email Sent! If you do not recieve an email within 24 hours, visit the Contact Us page to get help");
+                            res.cookie("currentMessage", "Email Sent! If you do not receive an email within 24 hours, visit the Contact Us page to get help");
                             res.redirect('/Loginpage');
                             return;
                         }
@@ -1538,7 +1540,7 @@ app.post("/forgotUsername", async (req, res) => {
                 to: req.body.email,
                 subject: 'Forgotten Username',
                 text: `Hey there, \n
-                        \nYour username on Bad Donuts as requested is: 
+                        \nYour username on ${site.SiteName} as requested is: 
                         \n${result.name} 
                         \nIf you did not click "Forgot Username?" or for more support, Visit the "Contact Us" page to get in touch with an Admin`
             };
@@ -1546,7 +1548,7 @@ app.post("/forgotUsername", async (req, res) => {
                 if (error) {
                     logger.logerror(err, "Sending Forgot Password Email")
                 } else {
-                    res.cookie("currentMessage", "Email Sent! If you do not recieve an email within 24 hours, visit the Contact Us page to get help");
+                    res.cookie("currentMessage", "Email Sent! If you do not receive an email within 24 hours, visit the Contact Us page to get help");
                     res.redirect('/Loginpage');
                     return;
                 }

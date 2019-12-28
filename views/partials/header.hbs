@@ -27,11 +27,12 @@
             <li class="nav-item {{#if active.Reviews}}active{{/if}}">
                 <a class="nav-link" href="/reviews">Reviews</a>
             </li>
-            {{#if user}}
-                <li class="nav-item {{#if active.Sales}}active{{/if}}">
-                    <a class="nav-link" href="/sales">{{#if admin}}Sales{{else}}Orders{{/if}}</a>
-                </li>
-            {{/if}}
+<!--            DISABLED-->
+<!--            {{#if user}}-->
+<!--                <li class="nav-item {{#if active.Sales}}active{{/if}}">-->
+<!--                    <a class="nav-link" href="/sales">{{#if admin}}Sales{{else}}Orders{{/if}}</a>-->
+<!--                </li>-->
+<!--            {{/if}}-->
             {{#if admin}}
                 <li class="nav-item {{#if active.site}}active{{/if}}">
                     <a class="nav-link" href="/site">Site</a>
@@ -67,7 +68,7 @@
                 </li>
             {{else}}
                 <li class="nav-item {{#if active.Login}}active{{/if}}">
-                    <a class="nav-link" href="/Loginpage">Login/Register</a>
+                    <a class="nav-link" href="/Loginpage">Login</a>
                 </li>
             {{/if}}
         </ul>
