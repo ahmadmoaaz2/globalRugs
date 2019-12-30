@@ -72,6 +72,7 @@ app.get('/', async (req, res) => {
     let db = utils.getDb();
     let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
     loggedIn(req);
+    site.imageCount = (!Array.isArray(site.HomeImage)) ? 1 : 2;
     res.render('Homepage.hbs', {
         title: "Home",
         active: {Home: true},
@@ -1769,6 +1770,9 @@ app.post('/editSite', async (req, res) => {
                 return;
             }
             let db = utils.getDb();
+            let HomeImage = req.body.HomeImage;
+            HomeImage = HomeImage.replace(/\s/g, '');
+            HomeImage = HomeImage.split(",");
             db.collection("site").updateOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")}, {
                 $set:{
                     CopyrightDate: req.body.CopyrightDate,
@@ -1780,7 +1784,7 @@ app.post('/editSite', async (req, res) => {
                     Address:req.body.Address,
                     MapLink:req.body.MapLink,
                     ContactDescription:req.body.ContactDescription,
-                    HomeImage:req.body.HomeImage,
+                    HomeImage:HomeImage,
                     HomeDescTitle:req.body.HomeDescTitle,
                     HomeDesc:req.body.HomeDesc,
                     HomeDescTitle2:req.body.HomeDescTitle2,
