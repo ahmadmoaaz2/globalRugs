@@ -71,10 +71,12 @@ let loggedIn = utils.loggedIn;
 app.get('/', async (req, res) => {
     let db = utils.getDb();
     let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
+    let emailFound = await db.collection("email").findOne({IP: req.headers['x-forwarded-for'] || req.connection.remoteAddress});
     loggedIn(req);
     site.imageCount = (!Array.isArray(site.HomeImage)) ? 1 : 2;
     res.render('Homepage.hbs', {
         title: "Home",
+        emailFound: emailFound,
         active: {Home: true},
         user: req.cookies.username, site: site,
         admin: JSON.parse(req.cookies.admin),
@@ -86,20 +88,20 @@ app.get('/', async (req, res) => {
 
 app.post("/subscribe", (req, res) => {
     let db = utils.getDb();
-    let email = req.body.email;
     db.collection('email').find().toArray((err, emails) => {
         if (err)
             logger.logerror(err,"Load emails from db");
         else {
-            for (email of emails){
-                if (email.Email === email){
+            for (let email of emails){
+                if (email.Email === req.body.email){
                     res.cookie("currentMessage", "Your email is already on our subscribers list");
                     res.redirect("/");
                     return;
                 }
             }
             db.collection("email").insertOne({
-                Email: email
+                Email: req.body.email,
+                IP: req.headers['x-forwarded-for'] || req.connection.remoteAddress || "Anonymous"
             }, (err, result) => {
                 if (err) {
                     logger.logerror(err, 'Insert email into database');

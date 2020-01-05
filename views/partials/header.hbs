@@ -80,28 +80,6 @@
         </ul>
     </div>
 </nav>
-
-{{#if active.Home}}
-    {{#if user}}{{else}}
-        <div class="w-100 text-center" id="mainDiv">
-            <div class="row justify-content-center">
-                <p class="lead">Please subscribe to our newsletter for updates and deals!</p>
-<!--                <a class="lead float-right" id="collapse">✖</a>-->
-            </div>
-            <form action="/subscribe" method="post" class="form">
-                <div class="form-group row text-center justify-content-center">
-                    <div class="col-3">
-                        <label class="sr-only" for="email">Email:</label>
-                        <input class="form-control" placeholder="Email" id="email" name="email" type="Email"
-                               required>
-                    </div>
-                    <button class="btn btn-info" type="submit">Subscribe</button>
-                </div>
-            </form>
-        </div>
-        <a href="#close" class="text-center" id="collapse" style="margin-bottom: 8px;">Close</a>
-    {{/if}}
-{{/if}}
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 <script>
     let swalcall = () => {
