@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <style>
-        html, body{
+        html, body {
             min-height: 98%;
         }
 
@@ -51,7 +52,7 @@
             right: 0;
         }
 
-        section{
+        section {
             margin-top: 0;
             margin-bottom: 0;
         }
@@ -63,124 +64,132 @@
     <title>{{site.SiteName}}</title>
 
 </head>
-    <body class="d-flex flex-column" style="width: 100%;">
-        {{>header}}
+<body class="d-flex flex-column" style="width: 100%;">
+{{>header}}
 
-        <!-- Jumbotron -->
-        <div class="jumbotron p-0">
-            <!-- Card image -->
-            <div class="view overlay rounded-top">
-                {{#if (eq site.imageCount 1)}}
-                <img src="{{site.HomeImage}}" class="d-block w-100" alt="Sample image" style="opacity: 0.9">
-                <a href="#">
-                    <div class="mask rgba-white-slight"></div>
-                </a>
-                {{else}}
-                    <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
-                        <ol class="carousel-indicators">
-                            {{#each site.HomeImage}}
-                                <li data-target="#carouselExampleIndicators" data-slide-to="{{@index}}"
-                                    {{#if (eq @index 1)}}class="active"{{/if}}></li>
-                            {{/each}}
-                        </ol>
-                        <div class="carousel-inner">
-                            {{#each site.HomeImage}}
-                                <div class="carousel-item {{#if (eq @index 1)}}active{{/if}}">
-                                    <img class="d-block w-100" src="{{this}}" alt="Slide {{@index}}">
-                                </div>
-                            {{/each}}
+<!-- Jumbotron -->
+<div class="jumbotron p-0">
+    <!-- Card image -->
+    <div class="view overlay rounded-top">
+        {{#if (eq site.imageCount 1)}}
+            <img src="{{site.HomeImage}}" class="d-block w-100" alt="Sample image" style="opacity: 0.9">
+            <a href="#">
+                <div class="mask rgba-white-slight"></div>
+            </a>
+        {{else}}
+            <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+                <ol class="carousel-indicators">
+                    {{#each site.HomeImage}}
+                        <li data-target="#carouselExampleIndicators" data-slide-to="{{@index}}"
+                            {{#if (eq @index 0)}}class="active"{{/if}}></li>
+                    {{/each}}
+                </ol>
+                <div class="carousel-inner">
+                    {{#each site.HomeImage}}
+                        <div class="carousel-item {{#if (eq @index 0)}}active{{/if}}">
+                            <img class="d-block w-100" src="{{this}}" alt="Slide {{@index}}">
                         </div>
-                        <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="sr-only">Previous</span>
-                        </a>
-                        <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="sr-only">Next</span>
-                        </a>
-                    </div>
-                {{/if}}
+                    {{/each}}
+                </div>
+                <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Previous</span>
+                </a>
+                <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Next</span>
+                </a>
             </div>
+        {{/if}}
+    </div>
 
-            <!-- Card content -->
-            <div class="card-body text-center mb-3">
+    <!-- Card content -->
+    <div class="card-body text-center mb-3">
 
-                <!-- Title -->
-                <h1 class="card-title h1"><strong>{{site.HomeDescTitle}}</strong></h1>
-                <!-- Text -->
-                <p class="card-text py-2">{{site.HomeDesc}}</p>
-                <!-- Button -->
-                <a href="/products" class="button btn-info" style="vertical-align:middle"><span>Shop Now</span></a>
+        <!-- Title -->
+        <h1 class="card-title h1"><strong>{{site.HomeDescTitle}}</strong></h1>
+        <!-- Text -->
+        <p class="card-text py-2">{{site.HomeDesc}}</p>
+        <!-- Button -->
+        <a href="/products" class="button btn-info" style="vertical-align:middle"><span>Shop Now</span></a>
+
+    </div>
+
+</div>
+<!-- Jumbotron -->
+
+<!-- Section: Features v.1 -->
+<div class="jumbotron">
+    <section class="text-center my-3" style="padding-left: 70px; padding-right: 70px">
+
+        <!-- Section heading -->
+        <h2 class="h1-responsive font-weight-bold my-3">{{site.HomeDescTitle2}}</h2>
+        <!-- Section description -->
+        <p class="lead grey-text w-responsive mx-auto mb-5">{{site.HomeDesc2}}</p>
+
+        <!-- Grid row -->
+        <div class="row">
+
+            <!-- Grid column -->
+            <div class="col-md-4">
+
+                <img src="{{site.CardImage1}}" class="rounded-circle" alt="balanced" height="100px" width="100px">
+                <h5 class="font-weight-bold my-4">{{site.CardTitle1}}</h5>
+                <p class="grey-text mb-md-0 mb-5">
+                    {{site.CardDesc1}}
+                </p>
 
             </div>
+            <!-- Grid column -->
+
+            <!-- Grid column -->
+            <div class="col-md-4">
+
+                <img src="{{site.CardImage2}}" class="rounded-circle" alt="authentic" height="100px" width="100px">
+                <h5 class="font-weight-bold my-4">{{site.CardTitle2}}</h5>
+                <p class="grey-text mb-md-0 mb-5">
+                    {{site.CardDesc2}}
+                </p>
+
+            </div>
+            <!-- Grid column -->
+
+            <!-- Grid column -->
+            <div class="col-md-4">
+
+                <img src="{{site.CardImage3}}" class="rounded-circle" alt="delicious" height="100px" width="100px">
+                <h5 class="font-weight-bold my-4">{{site.CardTitle3}}</h5>
+                <p class="grey-text mb-0">
+                    {{site.CardDesc3}}
+                </p>
+
+            </div>
+            <!-- Grid column -->
 
         </div>
-        <!-- Jumbotron -->
+        <!-- Grid row -->
 
-        <!-- Section: Features v.1 -->
-        <div class="jumbotron">
-        <section class="text-center my-3" style="padding-left: 70px; padding-right: 70px">
-
-            <!-- Section heading -->
-            <h2 class="h1-responsive font-weight-bold my-3">{{site.HomeDescTitle2}}</h2>
-            <!-- Section description -->
-            <p class="lead grey-text w-responsive mx-auto mb-5">{{site.HomeDesc2}}</p>
-
-            <!-- Grid row -->
-            <div class="row">
-
-                <!-- Grid column -->
-                <div class="col-md-4">
-
-                    <img src="{{site.CardImage1}}" class="rounded-circle" alt="balanced" height="100px" width="100px">
-                    <h5 class="font-weight-bold my-4">{{site.CardTitle1}}</h5>
-                    <p class="grey-text mb-md-0 mb-5">
-                        {{site.CardDesc1}}
-                    </p>
-
-                </div>
-                <!-- Grid column -->
-
-                <!-- Grid column -->
-                <div class="col-md-4">
-
-                    <img src="{{site.CardImage2}}" class="rounded-circle" alt="authentic" height="100px" width="100px">
-                    <h5 class="font-weight-bold my-4">{{site.CardTitle2}}</h5>
-                    <p class="grey-text mb-md-0 mb-5">
-                        {{site.CardDesc2}}
-                    </p>
-
-                </div>
-                <!-- Grid column -->
-
-                <!-- Grid column -->
-                <div class="col-md-4">
-
-                    <img src="{{site.CardImage3}}" class="rounded-circle" alt="delicious" height="100px" width="100px">
-                    <h5 class="font-weight-bold my-4">{{site.CardTitle3}}</h5>
-                    <p class="grey-text mb-0">
-                        {{site.CardDesc3}}
-                    </p>
-
-                </div>
-                <!-- Grid column -->
-
-            </div>
-            <!-- Grid row -->
-
-        </section>
-        <!-- Section: Features v.1 -->
-        </div>
-
-        {{>footer}}
-        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-        <script src="app.js"></script>
-    <script>
-        (document).ready(function () {
-
+    </section>
+    <!-- Section: Features v.1 -->
+</div>
+{{>footer}}
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+<script src="app.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#collapse").on("click", function () {
+            $("#mainDiv").removeClass("w-100").addClass("d-none");
+            $("#collapse").addClass("d-none");
         });
-    </script>
-  </body>
+    });
+</script>
+</body>
 </html>

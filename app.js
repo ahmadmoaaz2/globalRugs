@@ -84,6 +84,116 @@ app.get('/', async (req, res) => {
     res.clearCookie('currentMessage');
 });
 
+app.post("/subscribe", (req, res) => {
+    let db = utils.getDb();
+    let email = req.body.email;
+    db.collection('email').find().toArray((err, emails) => {
+        if (err)
+            logger.logerror(err,"Load emails from db");
+        else {
+            for (email of emails){
+                if (email.Email === email){
+                    res.cookie("currentMessage", "Your email is already on our subscribers list");
+                    res.redirect("/");
+                    return;
+                }
+            }
+            db.collection("email").insertOne({
+                Email: email
+            }, (err, result) => {
+                if (err) {
+                    logger.logerror(err, 'Insert email into database');
+                    res.cookie('currentMessage', 'Unable to subscribe, please try again');
+                    res.redirect('/');
+                } else {
+                    res.cookie('currentMessage', 'Successfully subscribed!');
+                    res.redirect('/');
+                }
+            });
+        }
+    });
+});
+
+app.get("/emails", async (req, res) => {
+    let db = utils.getDb();
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
+    if (loggedIn(req)) {
+        users.checkAdmin(req.cookies.username, (result) => {
+            if (!result) {
+                res.cookie('currentMessage', 'Must be admin to view emails');
+                res.redirect('/');
+                return;
+            }
+            db.collection('email').find().toArray((err, emails) => {
+                if (err)
+                    logger.logerror(err,"Load emails from db");
+                let newEmails = [];
+                if (req.query.filter) {
+                    for (let J of emails) {
+                        let testString = `${J.Email}`.toLowerCase();
+                        if (testString.includes(req.query.filter.toLowerCase())) {
+                            newEmails.push(J);
+                        }
+                    }
+                } else {
+                    newEmails = emails;
+                }
+                let copyString = "";
+                if (newEmails[0]) {
+                    copyString = emails[0].Email;
+                    for (let email of emails) {
+                        if (email === emails[0])
+                            continue;
+                        copyString += "," + email.Email;
+                    }
+                }
+                res.render('email.hbs', {
+                    title: "Home",
+                    emails: newEmails,
+                    copyString: copyString,
+                    active: {Emails: true},
+                    user: req.cookies.username, site: site,
+                    admin: JSON.parse(req.cookies.admin),
+                    currentMessage: req.cookies.currentMessage,
+                    cart: req.cookies.cart
+                });
+                res.clearCookie('currentMessage');
+            });
+
+        })
+    } else {
+        res.cookie('currentMessage', "Must be Logged in to view logs");
+        res.redirect('/Loginpage');
+    }
+});
+
+app.delete("/email/:id", (req, res) => {
+    let db = utils.getDb();
+    if (loggedIn(req)) {
+        users.checkAdmin(req.cookies.username, (result) => {
+            if (!result) {
+                res.cookie('currentMessage', 'Must be admin to view emails');
+                res.redirect('/');
+                return;
+            }
+            db.collection("email").findOneAndDelete({_id:ObjectId(req.params.id)}, (err, result) => {
+                if (err){
+                    logger.logerror(err, "Delete Email");
+                    res.cookie("currentMessage", "Failed to Delete Email");
+                    res.redirect('/emails')
+                } else {
+                    logger.logDB("Delete Email", req.cookies.username);
+                    res.cookie("currentMessage", "Successfully Deleted");
+                    res.redirect("/emails")
+                }
+            })
+        })
+    } else {
+        res.cookie('currentMessage', "Must be Logged in to view logs");
+        res.redirect('/Loginpage');
+    }
+});
+
 app.post('/upload', upload.single("picture"), (req, res) => {
     if (req.file) {
         res.cookie("currentMessage", "Successfully Uploaded");

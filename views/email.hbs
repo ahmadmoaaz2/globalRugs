@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <style>
+        html, body {
+            min-height: 98%;
+        }
+
+        .button {
+            display: inline-block;
+            color: #fff;
+            border-radius: 25px;
+            text-align: center;
+            font-size: 17px;
+            padding: 10px;
+            width: 155px;
+            cursor: pointer;
+            margin: 4px;
+            -webkit-transition: all 0.3s ease;
+            -moz-transition: all 0.3s ease;
+            -o-transition: all 0.3s ease;
+            transition: all 0.3s ease;
+        }
+
+        .button span {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            transition: 0.3s;
+        }
+
+        .button span:after {
+            content: '\00bb';
+            position: absolute;
+            opacity: 0;
+            top: 0;
+            right: -20px;
+            transition: 0.3s;
+        }
+
+        .button:hover span {
+            padding-right: 25px;
+        }
+
+        .button:hover span:after {
+            opacity: 1;
+            right: 0;
+        }
+
+        section {
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+
+
+    </style>
+    <link rel="icon" href="{{site.Logo}}">
+
+    <title>{{site.SiteName}}</title>
+
+</head>
+<body class="d-flex flex-column" style="width: 100%;">
+{{>header}}
+<div class="container">
+    <!-- Jumbotron Header -->
+    <header class="jumbotron my-4">
+        <h3 class="display-4">Hello, {{user}}!</h3>
+        <p class="lead">This console is used for management of emails and the newsletter subscriptions</p>
+        <div class="text-center">
+            <textarea id="invisible_copy_input" class="d-none">{{copyString}}</textarea>
+            <button id="copy_emails" class="btn btn-info btn-lg">Copy Emails in Sender Format</button>
+            <button id="send_emails" class="btn btn-info btn-lg">Send Email Through Site</button>
+            <button id="views_emails" class="btn btn-info btn-lg">View and Manage Emails</button>
+        </div>
+    </header>
+</div>
+<div id="emails_container" class="container w-100 justify-content-center">
+    <form class="form d-flex container text-center" method="get" action="/emails" style="padding-bottom: 30px;">
+        <label class="lead large" for="filter" style="padding-right: 20px;">Filter:</label>
+        <input class="form-control" name="filter" id="filter" placeholder="Keyword">
+        <button type="submit" class="btn btn-primary" id="filterButton" style="margin-left: 20px;">Reset</button>
+    </form>
+    <div class="container-fluid">
+        <p class="text-info text-center">Click Item to Copy, Click Button Above to Copy all Visible Emails</p>
+        <ul class="list-group">
+            {{#each emails}}
+                <form id="deleteForm{{this._id}}" class="list-group-item-secondary list-group-item list-group-item-action" method="post" action="/email/{{this._id}}?_method=DELETE">
+                    <textarea class="d-none" id="{{this._id}}">{{this.Email}}</textarea>
+                    <a class="lead">{{this.Email}}</a>
+                    <button id="deleteButton{{this._id}}" class="btn btn-danger float-right">Delete</button>
+                </form>
+            {{/each}}
+        </ul>
+    </div>
+</div>
+<div id="send_container" class="container w-100 d-none justify-content-center">
+    send placeholder
+</div>
+{{>footer}}
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+<script src="app.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#copy_emails").on("click", function () {
+            let invisibleCopyInput = document.querySelector("#invisible_copy_input");
+            invisibleCopyInput.classList.remove("d-none");
+            invisibleCopyInput.select();
+            document.execCommand("copy");
+            invisibleCopyInput.classList.add("d-none");
+            if (invisibleCopyInput.textContent)
+                swal("Copied");
+            else
+                swal("Nothing to Copy");
+        });
+        $("#send_emails").on("click", function () {
+            $("#send_container").removeClass("d-none");
+            $("#emails_container").addClass("d-none");
+        });
+        $("#views_emails").on("click", function () {
+            $("#send_container").addClass("d-none");
+            $("#emails_container").removeClass("d-none");
+        });
+        $("#filter").on("keydown", function () {
+            if ($("#filter").val() === "")
+                $("#filterButton").html("Reset");
+            else
+                $("#filterButton").html("Search");
+        });
+        $("#filter").on("blur", function () {
+            if ($("#filter").val() === "")
+                $("#filterButton").html("Reset");
+            else
+                $("#filterButton").html("Search");
+        });
+        {{#each emails}}
+            $("#deleteForm{{this._id}}").on("click", function () {
+                let item = document.querySelector("[id='{{this._id}}']");
+                item.classList.remove("d-none");
+                item.select();
+                document.execCommand("copy");
+                item.classList.add("d-none");
+                swal("Copied");
+            });
+            $("#deleteButton{{this._id}}").on("click", function () {
+                swal({
+                    title: "Are you sure?",
+                    text: "Once deleted, you will not be able to recover this email!",
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true,
+                }).then((willDelete) => {
+                    if (willDelete) {
+                        $("#deleteForm{{this._id}}").submit();
+                    } else {
+                        swal("No changes were made");
+                    }
+                });
+            });
+        {{/each}}
+    });
+</script>
+</body>
+</html>
