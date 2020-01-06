@@ -314,10 +314,10 @@
             $("#mainDiv").removeClass("w-100").addClass("d-none");
             $("#collapse").addClass("d-none");
         });
-        {{#if currentMessage}}{{else}}{{#if emailFound}}{{else}}
+        {{#if currentMessage}}{{else}}{{#if emailFound}}{{else}}{{#if admin}}{{else}}
         if (!isMobile)
             $("#myModal").modal("show");
-        {{/if}}{{/if}}
+        {{/if}}{{/if}}{{/if}}
     });
 </script>
 </body>
