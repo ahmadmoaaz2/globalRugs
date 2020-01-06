@@ -59,8 +59,21 @@
 
 
     </style>
-    <link rel="icon" href="{{site.Logo}}">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+            crossorigin="anonymous"></script>
+    <script src="app.js"></script>
 
+    <!-- include summernote css/js -->
+    <link href="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.12/summernote.css" rel="stylesheet">
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.12/summernote.js"></script>
+    <link rel="icon" href="{{site.Logo}}">
     <title>{{site.SiteName}}</title>
 
 </head>
@@ -89,7 +102,9 @@
         <p class="text-info text-center">Click Item to Copy, Click Button Above to Copy all Visible Emails</p>
         <ul class="list-group">
             {{#each emails}}
-                <form id="deleteForm{{this._id}}" class="list-group-item-secondary list-group-item list-group-item-action" method="post" action="/email/{{this._id}}?_method=DELETE">
+                <form id="deleteForm{{this._id}}"
+                      class="list-group-item-secondary list-group-item list-group-item-action" method="post"
+                      action="/email/{{this._id}}?_method=DELETE">
                     <textarea class="d-none" id="{{this._id}}">{{this.Email}}</textarea>
                     <a class="lead">{{this.Email}}</a>
                     <button id="deleteButton{{this._id}}" class="btn btn-danger float-right">Delete</button>
@@ -99,21 +114,37 @@
     </div>
 </div>
 <div id="send_container" class="container w-100 d-none justify-content-center">
-    send placeholder
+    <form action="/sendLetter" method="post" id="letterForm">
+        <label for="editor" class="lead">Type your email below and press submit to send to all subscribed members.
+        <br/> Please be patient as sending the emails may take some time.
+        </label>
+        <br>
+        <input class="form-control" name="subject" required type="text" placeholder="Subject">
+        <br>
+        <textarea id="editor" name="editorData" required></textarea>
+        <br>
+        <button type="button" id="submitButton" class="btn btn-danger">Submit</button>
+    </form>
 </div>
 {{>footer}}
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-        crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
-        crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-        crossorigin="anonymous"></script>
-<script src="app.js"></script>
 <script>
     $(document).ready(function () {
+        $("#editor").summernote();
+        $("#submitButton").on("click", function () {
+            swal({
+                title: "Are you sure?",
+                text: "Confirm sending this email",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            }).then((willDelete) => {
+                if (willDelete) {
+                    $("#letterForm").submit();
+                } else {
+                    swal("Email not sent");
+                }
+            });
+        });
         $("#copy_emails").on("click", function () {
             let invisibleCopyInput = document.querySelector("#invisible_copy_input");
             invisibleCopyInput.classList.remove("d-none");

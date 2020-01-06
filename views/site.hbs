@@ -79,6 +79,34 @@
                     <label>Twitter Link:</label>
                     <input class="form-control" placeholder="twitter.com" name="twitter" value="{{site.twitter}}">
                     <br>
+                    <label>Email Provider:</label>
+                    <select class="form-control" name="Provider" required>
+                        <option {{#if (eq site.Provider "DynectEmail")}}selected="selected"{{/if}} value="DynectEmail">DynectEmail</option>
+                        <option {{#if (eq site.Provider "Gmail")}}selected="selected"{{/if}} value="Gmail">Gmail</option>
+                        <option {{#if (eq site.Provider "hot.ee")}}selected="selected"{{/if}} value="hot.ee">hot.ee</option>
+                        <option {{#if (eq site.Provider "Hotmail")}}selected="selected"{{/if}} value="Hotmail">Hotmail</option>
+                        <option {{#if (eq site.Provider "iCloud")}}selected="selected"{{/if}} value="iCloud">iCloud</option>
+                        <option {{#if (eq site.Provider "mail.ee")}}selected="selected"{{/if}} value="mail.ee">mail.ee</option>
+                        <option {{#if (eq site.Provider "Mail.Ru")}}selected="selected"{{/if}} value="Mail.Ru">Mail.Ru</option>
+                        <option {{#if (eq site.Provider "Mailgun")}}selected="selected"{{/if}} value="Mailgun">Mailgun</option>
+                        <option {{#if (eq site.Provider "Mailjet")}}selected="selected"{{/if}} value="Mailjet">Mailjet</option>
+                        <option {{#if (eq site.Provider "Mandrill")}}selected="selected"{{/if}} value="Mandrill">Mandrill</option>
+                        <option {{#if (eq site.Provider "Postmark")}}selected="selected"{{/if}} value="Postmark">Postmark</option>
+                        <option {{#if (eq site.Provider "QQ")}}selected="selected"{{/if}} value="QQ">QQ</option>
+                        <option {{#if (eq site.Provider "QQex")}}selected="selected"{{/if}} value="QQex (Tencent Business Email)">QQex (Tencent Business Email)</option>
+                        <option {{#if (eq site.Provider "SendGrid")}}selected="selected"{{/if}} value="SendGrid">SendGrid</option>
+                        <option {{#if (eq site.Provider "SES")}}selected="selected"{{/if}} value="SES">SES</option>
+                        <option {{#if (eq site.Provider "Yahoo")}}selected="selected"{{/if}} value="Yahoo">Yahoo</option>
+                        <option {{#if (eq site.Provider "yandex")}}selected="selected"{{/if}} value="yandex">yandex</option>
+                        <option {{#if (eq site.Provider "Zoho")}}selected="selected"{{/if}} value="Zoho">Zoho</option>
+                    </select>
+                    <br>
+                    <label>Email:</label>
+                    <input class="form-control" placeholder="Email" name="Email2" value="{{site.Email2}}">
+                    <br>
+                    <label>Email Password:</label>
+                    <input class="form-control" placeholder="Password" type="password" name="Password" value="{{site.Password}}">
+                    <br>
                 </div>
                 <div class="card-footer">
                     <button class="btn-outline-primary btn" type="button" id="editButton1">Confirm</button>

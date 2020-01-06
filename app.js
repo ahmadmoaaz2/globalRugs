@@ -86,6 +86,47 @@ app.get('/', async (req, res) => {
     res.clearCookie('currentMessage');
 });
 
+app.post("/sendLetter", async (req, res) => {
+    let db = utils.getDb();
+    let site = await db.collection("site").findOne({_id: ObjectId("5dbdd9a31c9d440000b758d9")});
+    let transporter = nodemailer.createTransport({
+        service: site.Provider,
+        auth: {
+            user: site.Email2,
+            pass: site.Password,
+        }
+    });
+    db.collection('email').find().toArray((err, emails) => {
+        if (err)
+            logger.logerror(err,"Load emails from db");
+        let copyString = "";
+        if (emails[0]) {
+            copyString = emails[0].Email;
+            for (let email of emails) {
+                if (email === emails[0])
+                    continue;
+                copyString += "," + email.Email;
+            }
+        }
+        let mailOptions = {
+            from: site.Email2,
+            to: copyString,
+            subject: req.body.subject,
+            html: req.body.editorData,
+        };
+        transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+                logger.logerror(error, "Sending Forgot Password Email");
+                res.cookie("currentMessage", "Failed to Send Email(s)");
+                res.redirect('/emails');
+            } else {
+                res.cookie("currentMessage", "Emails Sent!");
+                res.redirect('/emails');
+            }
+        });
+    });
+});
+
 app.post("/subscribe", (req, res) => {
     let db = utils.getDb();
     db.collection('email').find().toArray((err, emails) => {
@@ -114,6 +155,21 @@ app.post("/subscribe", (req, res) => {
             });
         }
     });
+});
+
+app.delete("/unsubscribe/:id", (req, res) => {
+    let db = utils.getDb();
+    db.collection("email").findOneAndDelete({_id:ObjectId(req.params.id)}, (err, result) => {
+        if (err){
+            logger.logerror(err, "Delete Email");
+            res.cookie("currentMessage", "Failed to Delete Email");
+            res.redirect('/');
+        } else {
+            logger.logDB("Unsubscribe Email", req.cookies.username);
+            res.cookie("currentMessage", "Successfully Unsubscribed");
+            res.redirect("/");
+        }
+    })
 });
 
 app.get("/emails", async (req, res) => {
@@ -1593,14 +1649,14 @@ app.post("/forgotPassword", async (req, res) => {
                 else {
                     logger.loguser("Change Password (Forgot)", "Success", result.name);
                     let transporter = nodemailer.createTransport({
-                        service: 'gmail',
+                        service: site.Provider,
                         auth: {
-                            user: 'agiledevproject@gmail.com',
-                            pass: 'AgileDev1234'
+                            user: site.Email2,
+                            pass: site.Password,
                         }
                     });
                     let mailOptions = {
-                        from: 'agiledevproject@gmail.com',
+                        from: site.Email2,
                         to: req.body.email,
                         subject: 'Forgotten Password',
                         text: `Hey there ${result.name}, \n
@@ -1610,7 +1666,10 @@ app.post("/forgotPassword", async (req, res) => {
                     };
                     transporter.sendMail(mailOptions, function (error, info) {
                         if (error) {
-                            logger.logerror(err, "Sending Forgot Password Email")
+                            logger.logerror(error, "Sending Forgot Password Email");
+                            res.cookie("currentMessage", "Failed to Send Email");
+                            console.log(error);
+                            res.redirect('/Loginpage');
                         } else {
                             res.cookie("currentMessage", "Email Sent! If you do not receive an email within 24 hours, visit the Contact Us page to get help");
                             res.redirect('/Loginpage');
@@ -1642,14 +1701,14 @@ app.post("/forgotUsername", async (req, res) => {
             return;
         } else {
             let transporter = nodemailer.createTransport({
-                service: 'gmail',
+                service: site.Provider,
                 auth: {
-                    user: 'agiledevproject@gmail.com',
-                    pass: 'AgileDev1234'
+                    user: site.Email2,
+                    pass: site.Password,
                 }
             });
             let mailOptions = {
-                from: 'agiledevproject@gmail.com',
+                from: site.Email2,
                 to: req.body.email,
                 subject: 'Forgotten Username',
                 text: `Hey there, \n
@@ -1659,7 +1718,10 @@ app.post("/forgotUsername", async (req, res) => {
             };
             transporter.sendMail(mailOptions, function (error, info) {
                 if (error) {
-                    logger.logerror(err, "Sending Forgot Password Email")
+                    logger.logerror(error, "Sending Forgot Password Email");
+                    res.cookie("currentMessage", "Failed to Send Email");
+                    res.redirect('/Loginpage');
+                    return;
                 } else {
                     res.cookie("currentMessage", "Email Sent! If you do not receive an email within 24 hours, visit the Contact Us page to get help");
                     res.redirect('/Loginpage');
@@ -1913,6 +1975,9 @@ app.post('/editSite', async (req, res) => {
                     facebook: req.body.facebook,
                     linkedin: req.body.linkedin,
                     twitter: req.body.twitter,
+                    Provider: req.body.Provider,
+                    Email2: req.body.Email2,
+                    Password: req.body.Password,
                 }
             }, (err, result) => {
                 if (err)
