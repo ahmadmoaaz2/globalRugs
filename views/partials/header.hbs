@@ -8,7 +8,7 @@
 
 
 <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: {{site.NavColor}};">
-    <a class="navbar-brand font-weight-bolder" href="/">
+    <a class="navbar-brand font-weight-bolder" title="Home Page" title="Home Page" href="/">
         <img src="{{site.Logo}}" alt="Logo" height="50px">
         {{site.SiteName}}
     </a>
@@ -20,13 +20,13 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav ml-auto">
             <li class="nav-item {{#if active.Home}}active{{/if}}">
-                <a class="nav-link" href="/">Home</a>
+                <a class="nav-link" title="Home Page" href="/">Home</a>
             </li>
             <li class="nav-item {{#if active.Products}}active{{/if}}">
-                <a class="nav-link" href="/products">Products</a>
+                <a class="nav-link" href="/products" title="Products Page">Products</a>
             </li>
             <li class="nav-item {{#if active.Reviews}}active{{/if}}">
-                <a class="nav-link" href="/reviews">Reviews</a>
+                <a class="nav-link" href="/reviews" title="Reviews Page">Reviews</a>
             </li>
             <!--            DISABLED-->
                 <!--            {{#if user}}-->
@@ -36,23 +36,23 @@
                 <!--            {{/if}}-->
             {{#if admin}}
                 <li class="nav-item {{#if active.site}}active{{/if}}">
-                    <a class="nav-link" href="/site">Site</a>
+                    <a class="nav-link" href="/site" title="Site Edit Page">Site</a>
                 </li>
                 <li class="nav-item {{#if active.Logs}}active{{/if}}">
-                    <a class="nav-link" href="/logs">Logs</a>
+                    <a class="nav-link" href="/logs" title="Logs Page">Logs</a>
                 </li>
                 <li class="nav-item {{#if active.users}}active{{/if}}">
-                    <a class="nav-link" href="/users">Users</a>
+                    <a class="nav-link" href="/users" title="Users Page">Users</a>
                 </li>
                 <li class="nav-item {{#if active.Emails}}active{{/if}}">
-                    <a class="nav-link" href="/emails">Emails</a>
+                    <a class="nav-link" href="/emails" title="Emails Page">Emails</a>
                 </li>
                 <li class="nav-item {{#if active.Images}}active{{/if}}">
-                    <a class="nav-link" href="/images">Images</a>
+                    <a class="nav-link" href="/images" title="Images Page">Images</a>
                 </li>
             {{/if}}
             <li class="nav-item {{#if active.Contact}}active{{/if}}">
-                <a class="nav-link" href="/Contact">Contact</a>
+                <a class="nav-link" href="/Contact" title="Contact Page">Contact</a>
             </li>
             {{#if user}}
                 <li class="nav-item {{#if active.User}}active{{/if}}">
@@ -64,17 +64,17 @@
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
                             {{#if admin}}
                             {{else}}
-                                <a class="dropdown-item" href="/ShoppingCart">Cart {{#if cart}}
+                                <a class="dropdown-item" href="/ShoppingCart" title="Shopping Cart Page">Cart {{#if cart}}
                                     ({{length cart}}){{/if}}</a>
                             {{/if}}
-                            <a class="dropdown-item" href="/account">Account</a>
-                            <a class="dropdown-item" href="/Logout">Logout</a>
+                            <a class="dropdown-item" href="/account" title="Account Page">Account</a>
+                            <a class="dropdown-item" href="/Logout" title="Logout">Logout</a>
                         </div>
                     </div>
                 </li>
             {{else}}
                 <li class="nav-item {{#if active.Login}}active{{/if}}">
-                    <a class="nav-link" href="/Loginpage">Login</a>
+                    <a class="nav-link" href="/Loginpage" title="Login Page">Login</a>
                 </li>
             {{/if}}
         </ul>

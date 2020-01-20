@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
+    <meta name="description" content="{{site.MetaDescription}}">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <style>
@@ -197,6 +197,7 @@
 </head>
 <body class="d-flex flex-column" style="width: 100%;">
 {{>header}}
+<h1 class="d-none">{{site.SiteName}}</h1>
 <!-- Jumbotron -->
 <div class="jumbotron p-0">
     <!-- Card image -->
@@ -241,7 +242,7 @@
         <!-- Text -->
         <p class="card-text py-2">{{site.HomeDesc}}</p>
         <!-- Button -->
-        <a href="/products" class="button btn-info" style="vertical-align:middle"><span>Shop Now</span></a>
+        <a href="/products" title="products" class="button btn-info" style="vertical-align:middle"><span>Shop Now</span></a>
 
     </div>
 

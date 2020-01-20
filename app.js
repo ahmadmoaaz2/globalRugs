@@ -1978,6 +1978,7 @@ app.post('/editSite', async (req, res) => {
                     Provider: req.body.Provider,
                     Email2: req.body.Email2,
                     Password: req.body.Password,
+                    MetaDescription: req.body.MetaDescription,
                 }
             }, (err, result) => {
                 if (err)
