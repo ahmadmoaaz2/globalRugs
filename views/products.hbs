@@ -157,17 +157,22 @@
         {{#each products}}
             <div class="card ml-3 mr-3 mb-3 mt-3 text-center" style="width:17rem">
                 <div class="hovereffect">
-                    <img src="{{this.image}}" class="card-img-top" alt="Product Image" style="height: 220px">
-                    <div class="overlay">
-                        <p class="text-white align-self-center"
-                           style="padding-top: 50px; padding-left: 15px; padding-right: 15px">
-                            {{this.description}}
-                        </p>
-                    </div>
+                    <img src="{{this.image}}" id="image{{this._id}}" class="card-img-top" alt="Product Image" style="height: 220px">
+                    <!--                    <div class="overlay">-->
+                    <!--                        <p class="text-white align-self-center"-->
+                    <!--                           style="padding-top: 50px; padding-left: 15px; padding-right: 15px">-->
+                    <!--                            {{this.description}}-->
+                    <!--                        </p>-->
+                    <!--                    </div>-->
                 </div>
                 <div class="card-body">
                     <h4 class="card-title">{{this.name}}</h4>
-                    <p class="card-text">Suggested Price: ${{this.suggestedPrice}}</p>
+                    <a class="lead" data-toggle="collapse" href="#collapse{{this._id}}" role="button"
+                       aria-expanded="false" aria-controls="collapse{{this._id}}">Description</a>
+                    <div class="collapse" id="collapse{{this._id}}">
+                        {{this.description}}
+                    </div>
+                    <p class="card-text" style="margin-top: 5px;">Suggested Price: ${{this.suggestedPrice}}</p>
                     <p class="card-text text-danger">Sale Price: ${{this.salePrice}}</p>
                     <form method="post" id="deleteForm{{this._id}}" action="/products/{{this._id}}?_method=DELETE">
                         <a class="btn btn-primary" href="/products-edit-form/{{this._id}}">Edit</a>
@@ -187,39 +192,45 @@
             </div>
         {{/if}}
         <div class="container-fluid row d-flex justify-content-center">
-            {{#each products}}
+        {{#each products}}
                 <div class="card ml-3 mr-3 mb-3 mt-3 text-center" style="width:17rem">
                     <div class="hovereffect">
-                        <img src="{{this.image}}" class="card-img-top" alt="Product Image" style="height: 220px">
-                        <div class="overlay">
-                            <p class="text-white align-self-center"
-                               style="padding-top: 50px; padding-left: 15px; padding-right: 15px">
-                                {{this.description}}
-                            </p>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <h4 class="card-title">{{this.name}}</h4>
-                        <p class="card-text">Suggested Price: ${{this.suggestedPrice}}</p>
-                        <p class="card-text text-danger">Sale Price: ${{this.salePrice}}</p>
-                        {{#if ../user}}
-                            <form method="post" action="/addCart/{{this._id}}">
-                                <div class="form-group justify-content-center" style="display:inline-flex;">
-                                    <label for="quantity">Amount: &nbsp;</label><input min="1" value="1" type="number"
-                                                                                       id="quantity" name="quantity"
-                                                                                       class="form-control col-4"
-                                                                                       required>
-                                </div>
-                                <button type="submit" class="btn btn-info" style="border-radius: 20px">Add to Cart
-                                </button>
-                            </form>
-                        {{else}}
-                            <a type="button" href="#exampleModal" data-toggle="modal" data-target="#exampleModal">Purchase</a>
-                        {{/if}}
+                        <img src="{{this.image}}" id="image{{this._id}}" class="card-img-top" alt="Product Image" style="height: 220px">
+                        <!--                        <div class="overlay">-->
+                        <!--                            <p class="text-white align-self-center"-->
+                        <!--                               style="padding-top: 50px; padding-left: 15px; padding-right: 15px">-->
+                        <!--                                {{this.description}}-->
+                        <!--                            </p>-->
                     </div>
                 </div>
-                <br>
-            {{/each}}
+                <div class="card-body">
+                    <h4 class="card-title">{{this.name}}</h4>
+                    <a class="lead" data-toggle="collapse" href="#collapse{{this._id}}" role="button"
+                       aria-expanded="false" aria-controls="collapse{{this._id}}">Description</a>
+                    <div class="collapse" id="collapse{{this._id}}">
+                        {{this.description}}
+                    </div>
+                    <p class="card-text" style="margin-top: 5px;">Suggested Price: ${{this.suggestedPrice}}</p>
+                    <p class="card-text text-danger">Sale Price: ${{this.salePrice}}</p>
+                    {{#if ../user}}
+                        <form method="post" action="/addCart/{{this._id}}">
+                            <div class="form-group justify-content-center" style="display:inline-flex;">
+                                <label for="quantity">Amount: &nbsp;</label><input min="1" value="1" type="number"
+                                                                                   id="quantity" name="quantity"
+                                                                                   class="form-control col-4"
+                                                                                   required>
+                            </div>
+                            <button type="submit" class="btn btn-info" style="border-radius: 20px">Add to Cart
+                            </button>
+                        </form>
+                    {{else}}
+                        <a type="button" href="#exampleModal" data-toggle="modal"
+                           data-target="#exampleModal">Purchase</a>
+                    {{/if}}
+                </div>
+            </div>
+            <br>
+        {{/each}}
         </div>
     {{/if}}
 {{/if}}
@@ -236,11 +247,11 @@
             </div>
             <div class="modal-body text-center">
                 To purchase this product, please visit us in store at
-                <br /> {{site.Address}}.
-                <br />
-                <br />For any questions or concerns,
+                <br/> {{site.Address}}.
+                <br/>
+                <br/>For any questions or concerns,
                 please contact us at
-                <br /><strong>{{site.Email}}</strong> or use the <a href="/Contact">Contact Us</a> page.
+                <br/><strong>{{site.Email}}</strong> or use the <a href="/Contact">Contact Us</a> page.
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -248,6 +259,28 @@
         </div>
     </div>
 </div>
+{{#each products}}
+    <!-- Modal -->
+    <div class="modal fade" id="imageModal{{this._id}}" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel{{this._id}}"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">{{this.name}}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-center">
+                    <img src="{{this.image}}" class="card-img-top" alt="Product Image">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{{/each}}
 {{>footer}}
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
         integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
@@ -262,6 +295,9 @@
 <script>
         {{#each products}}
         $(document).ready(function () {
+            $("#image{{this._id}}").on("click", function () {
+                $("#imageModal{{this._id}}").modal("show");
+            });
             $("#deleteButton{{this._id}}").on("click", function () {
                 swal({
                     title: "Are you sure?",

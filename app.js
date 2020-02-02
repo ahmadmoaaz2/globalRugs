@@ -1276,6 +1276,7 @@ app.put('/products/:id', async (req, res) => {
             update_date_time: moment(new Date()).format("YYYY-MM-DD HH:mm:ss"),
             image: req.body.image,
             description: req.body.description,
+            tags: req.body.tags,
         }
     }, function (err, result) {
         if (err) {
@@ -1328,7 +1329,7 @@ app.get('/products', async (req, res) => {
         if (result) {
             if (req.query.filter) {
                 for (let J in result) {
-                    let testString = `${result[J].name} ${result[J].description}`.toLowerCase();
+                    let testString = `${result[J].name} ${result[J].description} ${result[J].tags}`.toLowerCase();
                     if (testString.includes(req.query.filter.toLowerCase())) {
                         newProducts.push(result[J])
                     }
